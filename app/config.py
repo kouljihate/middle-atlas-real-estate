@@ -57,7 +57,7 @@ AFFAIR_STATUS_CHOICES = STATUS_CHOICES + [("Cancelled", "status_cancelled")]
 # MAC allow-list behaviour
 MAC_ALLOWLIST_FILE = os.path.join(BASE_DIR, "mac_allowlist.json")
 # When True, every request must come from a device whose MAC is on the list.
-MAC_FILTER_ENABLED = True
+# Overridable via the MAC_FILTER_ENABLED env var (see below).
 # Header the client/network gateway is expected to present its MAC in.
 MAC_HEADER = "X-Device-MAC"
 # Hardcoded password required before the MAC allow-list page can be viewed.
@@ -66,4 +66,15 @@ MAC_PASSWORD = "LooK9LooK"
 SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
 
 # App version (displayed in the footer). Bump on every release.
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.0"
+
+# MAC allow-list is meant for LAN deployments. On a public/hosted deployment
+# client MAC addresses are not available, so the filter must be disabled.
+MAC_FILTER_ENABLED = os.environ.get("MAC_FILTER_ENABLED", "true").lower() in (
+    "1", "true", "yes", "on"
+)
+
+# Raw JSON served at /.well-known/assetlinks.json for Trusted Web Activity
+# (Android TWA) verification. Set ASSETLINKS_JSON to the generated content
+# (contains the SHA256 of your app's signing key). Defaults to empty.
+ASSETLINKS_JSON = os.environ.get("ASSETLINKS_JSON", "[]")

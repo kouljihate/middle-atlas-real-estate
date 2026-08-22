@@ -1,0 +1,27 @@
+# Render deployment (web service + managed Postgres).
+# After creating the service, Render auto-injects DATABASE_URL.
+# Set these environment variables in the Render dashboard:
+#   MAC_FILTER_ENABLED = false      # public host: disable LAN MAC gate
+#   SECRET_KEY        = <random>
+#   ASSETLINKS_JSON   = <TWA digital asset links JSON>
+services:
+  - type: web
+    name: middle-atlas-real-estate
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13"
+      - key: MAC_FILTER_ENABLED
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: middle-atlas-db
+          property: connectionString
+databases:
+  - name: middle-atlas-db
+    databaseName: middle_atlas
+    plan: free

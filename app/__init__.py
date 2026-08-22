@@ -4,7 +4,7 @@ import secrets
 
 from flask import (
     Flask, abort, flash, get_flashed_messages, redirect, render_template,
-    request, session, url_for,
+    request, Response, session, url_for,
 )
 from pydantic import ValidationError
 
@@ -74,6 +74,12 @@ def _pydantic_errors(exc: ValidationError) -> list:
 def inject_year():
     from datetime import datetime
     return {"now_year": datetime.now().year}
+
+
+@app.route("/.well-known/assetlinks.json")
+def assetlinks():
+    """TWA / Digital Asset Links verification for the Android app."""
+    return Response(config.ASSETLINKS_JSON, mimetype="application/json")
 
 
 # ---------------------------------------------------------------------------

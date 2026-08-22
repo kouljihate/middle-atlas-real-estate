@@ -56,6 +56,15 @@ extended by an AI assistant or another developer.
 6. **Polish & ship**: "Fix corrupted characters in the header/footer, set an
    app version shown in the footer, replace the top-left logo with a clean SVG,
    write README.md and PROMPT.md, and push the project to GitHub (kouljihate)."
+7. **Dashboard tweaks**: "Remove the Agreed Price card; make the affair-activity
+   heatmap range selectable from a week-count dropdown (4/8/13/26/52) instead of
+   the static 26; replace the footer's left menu with the version number."
+8. **Android (TWA)**: "Prepare the app for a sideloaded Android TWA APK: make
+   `run.py` honor `PORT`, add a Postgres driver + `gunicorn`, add Render
+   deployment files (`Procfile`, `runtime.txt`, `render.yaml`), make the MAC
+   filter overridable via `MAC_FILTER_ENABLED` (off for public hosts), serve
+   `/.well-known/assetlinks.json` for TWA trust, and document Deploy + Android
+   build steps. Bump APP_VERSION to 1.1.0 and push."
 
 ## 3. Conventions for AI collaboration
 
