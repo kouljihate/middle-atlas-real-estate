@@ -51,13 +51,8 @@
     </main>
 
     <footer class="footer">
-        <div class="footer-col">
-            <a href="{{ url_for('dashboard') }}" class="nav-link">{{ _('dashboard') }}</a>
-            <a href="{{ url_for('affairs_list') }}" class="nav-link">{{ _('affairs') }}</a>
-            <a href="{{ url_for('lands_list') }}" class="nav-link">{{ _('list_lands') }}</a>
-            <a href="{{ url_for('customer_list') }}" class="nav-link">{{ _('customers') }}</a>
-            <a href="{{ url_for('seller_list') }}" class="nav-link">{{ _('sellers') }}</a>
-            <a href="{{ url_for('mac_admin') }}" class="nav-link">{{ _('mac_settings') }}</a>
+        <div class="footer-col footer-ver-col">
+            <span class="footer-ver">v{{ version }}</span>
         </div>
         <div class="footer-col footer-lang">
             <span class="lang-label">{{ _('language') }}:</span>
@@ -68,7 +63,6 @@
         </div>
         <div class="footer-col footer-copy">
             <span>{{ _('app_title') }} @{{ now_year }}</span>
-            <span class="footer-ver">v{{ version }}</span>
         </div>
     </footer>
 
