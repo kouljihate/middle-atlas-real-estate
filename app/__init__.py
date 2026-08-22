@@ -153,8 +153,15 @@ def set_lang(lang):
 @app.route("/dashboard")
 def dashboard():
     """Landing page: KPI cards + activity heatmap over affairs."""
-    import calendar
     from datetime import date, datetime, timedelta
+
+    WEEK_OPTIONS = [4, 8, 13, 26, 52]
+    try:
+        w = int(request.args.get("w", 26))
+    except (TypeError, ValueError):
+        w = 26
+    if w not in WEEK_OPTIONS:
+        w = 26
 
     affairs = db.get_all_affairs()
     today = date.today()
@@ -167,8 +174,8 @@ def dashboard():
             continue
         per_day[d.isoformat()] = per_day.get(d.isoformat(), 0) + 1
 
-    # Last 26 weeks, columns are Monday-based weeks, trimmed at today.
-    start = today - timedelta(days=181)
+    # Last `w` weeks, columns are Monday-based weeks, trimmed at today.
+    start = today - timedelta(days=w * 7 - 1)
     start -= timedelta(days=start.weekday())
     weeks, counts = [], []
     d = start
@@ -201,7 +208,8 @@ def dashboard():
         "dashboard.html",
         weeks=weeks,
         statuses=statuses,
-        month_label=calendar.month_abbr[today.month],
+        week_options=WEEK_OPTIONS,
+        w=w,
         n_lands=db.get_lands_page("", 1, 1)[1],
         n_sellers=len(db.get_all_parties("seller")),
         n_buyers=len(db.get_all_parties("customer")),

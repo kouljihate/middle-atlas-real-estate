@@ -254,6 +254,10 @@ tr.status-cancelled { background: #fdecec; }
 .dash-card .l { color: var(--muted); font-size: .85rem; text-decoration: none; }
 a.l:hover { color: var(--primary); }
 .dash-panel h2 { margin: .2rem 0 .9rem; font-size: 1rem; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .7rem; flex-wrap: wrap; }
+.panel-head h2 { margin: 0; }
+.week-form { display: inline-flex; align-items: center; gap: .4rem; font-size: .82rem; color: var(--muted); }
+.week-form select { font: inherit; padding: .25rem .4rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--ink); }
 .heatmap { display: flex; gap: 3px; direction: ltr; overflow-x: auto; padding-bottom: .35rem; }
 .heat-col { display: flex; flex-direction: column; gap: 3px; }
 .heat-cell { width: 13px; height: 13px; border-radius: 3px; background: #e3ece6; display: inline-block; flex: none; }

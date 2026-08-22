@@ -30,7 +30,17 @@
 </div>
 
 <section class="card dash-panel">
-    <h2>{{ _('activity') }}</h2>
+    <div class="panel-head">
+        <h2>{{ _('activity') }}</h2>
+        <form method="get" class="week-form" aria-label="{{ _('weeks') }}">
+            <label for="w">{{ _('weeks') }}</label>
+            <select id="w" name="w" onchange="this.form.submit()">
+                {% for opt in week_options %}
+                <option value="{{ opt }}" {{ 'selected' if opt == w }}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
     <div class="heatmap">
         {% for week in weeks %}
         <div class="heat-col">
