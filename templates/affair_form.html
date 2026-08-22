@@ -1,0 +1,92 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <h1>{% if affair %}{{ _('edit_affair') }}{% else %}{{ _('add_affair') }}{% endif %}</h1>
+    <a href="{{ url_for('affairs_list') }}" class="btn ghost">{{ _('back') }}</a>
+</section>
+
+{% set errors_map = {} %}
+{% for e in errors %}
+    {% set parts = e.split(': ', 1) %}
+    {% if parts|length == 2 %}
+        {% set _ = errors_map.update({parts[0]: parts[1]}) %}
+    {% endif %}
+{% endfor %}
+
+{% macro field(name, label, value, type='text', step=None) %}
+<div class="form-group">
+    <label for="{{ name }}">{{ label }}</label>
+    <input id="{{ name }}" name="{{ name }}" type="{{ type }}"
+           value="{{ value or '' }}" {{ 'step='~step if step }}
+           class="input" {% if name in errors_map %}aria-invalid="true"{% endif %}>
+    {% if name in errors_map %}<small class="err">{{ errors_map[name] }}</small>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro select(name, label, options, selected, placeholder=None) %}
+<div class="form-group">
+    <label for="{{ name }}">{{ label }}</label>
+    <select id="{{ name }}" name="{{ name }}" class="input">
+        {% if placeholder %}<option value="">{{ placeholder }}</option>{% endif %}
+        {% for val, label_text in options %}
+            <option value="{{ val }}" {{ 'selected' if val|string == selected|string }}>{{ label_text }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endmacro %}
+
+<form method="post" class="land-form" novalidate>
+    {{ select('seller_id', _('seller'), seller_options,
+              data.seller_id if data else (affair.seller_id if affair else ''),
+              _('seller')) }}
+
+    <div class="form-group">
+        <label for="land_id">{{ _('land') }}</label>
+        <select id="land_id" name="land_id" class="input">
+            <option value="">{{ _('land') }}</option>
+            {% set current_land = data.land_id if data else (affair.land_id if affair else '') %}
+            {% for l in land_options %}
+                <option value="{{ l.id }}" {{ 'selected' if l.id|string == current_land|string }}>{{ l.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    {{ select('buyer_id', _('buyer'), buyer_options,
+              data.buyer_id if data else (affair.buyer_id if affair else ''),
+              _('buyer')) }}
+
+    <div class="form-group">
+        <label for="status">{{ _('status') }}</label>
+        <select id="status" name="status" class="input">
+            {% set current = data.status if data else (affair.status if affair else 'Open') %}
+            {% for val, key in affair_status_choices %}
+                <option value="{{ val }}" {{ 'selected' if val == current }}>{{ _(key) }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    {{ field('agreed_price', _('agreed_price'), data.agreed_price if data else (affair.agreed_price if affair else ''), 'number', 'any') }}
+    {{ field('deposit', _('deposit'), data.deposit if data else (affair.deposit if affair else ''), 'number', 'any') }}
+    {{ field('commission', _('commission'), data.commission if data else (affair.commission if affair else ''), 'number', 'any') }}
+    {{ field('closing_date', _('closing_date'), data.closing_date if data else (affair.closing_date if affair else ''), 'date') }}
+
+    <div class="form-group">
+        <label for="notes">{{ _('notes') }}</label>
+        <textarea id="notes" name="notes" rows="4" class="input">{{ data.notes if data else (affair.notes if affair else '') or '' }}</textarea>
+    </div>
+
+    {% if errors %}
+        <ul class="error-list">
+        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="form-actions">
+        <button type="submit" class="btn primary">{{ _('save') }}</button>
+        <a href="{{ url_for('affairs_list') }}" class="btn ghost">{{ _('cancel') }}</a>
+    </div>
+</form>
+
+<script id="lands-by-seller" type="application/json">{{ lands_by_seller | tojson }}</script>
+{% endblock %}

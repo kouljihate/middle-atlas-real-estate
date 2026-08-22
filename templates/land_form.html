@@ -1,0 +1,96 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <h1>{% if land %}{{ _('edit_land') }}{% else %}{{ _('add_land') }}{% endif %}</h1>
+    <a href="{{ url_for('lands_list') }}" class="btn ghost">{{ _('back') }}</a>
+</section>
+
+{% set errors_map = {} %}
+{% for e in errors %}
+    {% set parts = e.split(': ', 1) %}
+    {% if parts|length == 2 %}
+        {% set _ = errors_map.update({parts[0]: parts[1]}) %}
+    {% endif %}
+{% endfor %}
+
+{% macro field(name, label, value, type='text', step=None) %}
+<div class="form-group">
+    <label for="{{ name }}">{{ label }}</label>
+    <input id="{{ name }}" name="{{ name }}" type="{{ type }}"
+           value="{{ value or '' }}" {{ 'step='~step if step }}
+           class="input" {% if name in errors_map %}aria-invalid="true"{% endif %}>
+    {% if name in errors_map %}<small class="err">{{ errors_map[name] }}</small>{% endif %}
+</div>
+{% endmacro %}
+
+<form method="post" enctype="multipart/form-data" class="land-form" novalidate>
+    {{ field('title', _('title'), land.title if land else data.get('title')) }}
+    {{ field('location', _('location'), land.location if land else data.get('location')) }}
+    {{ field('area', _('area'), land.area if land else data.get('area'), 'number', 'any') }}
+    {{ field('price', _('price'), land.price if land else data.get('price'), 'number', 'any') }}
+    {{ field('owner_name', _('owner'), land.owner_name if land else data.get('owner_name')) }}
+
+    <div class="form-group">
+        <label for="seller_id">{{ _('seller') }}</label>
+        <select id="seller_id" name="seller_id" class="input">
+            <option value="">{{ _('seller') }}</option>
+            {% set current_seller = land.seller_id if land else data.get('seller_id') %}
+            {% for s in sellers %}
+                <option value="{{ s.id }}" {{ 'selected' if s.id|string == current_seller|string }}>{{ s.full_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="description">{{ _('description') }}</label>
+        <textarea id="description" name="description" rows="4" class="input">{{ land.description if land else data.get('description') or '' }}</textarea>
+    </div>
+
+    {% for k in media_kinds %}
+    <div class="form-group">
+        <label for="{{ k.field }}">{{ _(k.label_key) }}</label>
+        <input id="{{ k.field }}" name="{{ k.field }}" type="file"
+               accept="{{ k.accept }}" multiple class="input file">
+        {% if land and land[k.column] %}
+            <div class="existing">
+                {% for m in land[k.column] %}
+                    <label class="chip">
+                        <input type="checkbox" name="keep_{{ k.name }}" value="{{ m }}" checked>
+                        {% if k.name == 'photo' %}
+                            <img src="{{ url_for('static', filename=m) }}" alt="">
+                        {% elif k.name == 'video' %}
+                            <video src="{{ url_for('static', filename=m) }}" muted></video>
+                        {% elif k.name == 'audio' %}
+                            <audio controls src="{{ url_for('static', filename=m) }}"></audio>
+                        {% else %}
+                            <span class="doc">📄 {{ m.split('/')[-1] }}</span>
+                        {% endif %}
+                        <span>keep</span>
+                    </label>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if k.name == 'audio' %}
+        <div class="recorder">
+            <button type="button" id="recordBtn" class="btn small">🎤 {{ _('hold_to_record') }}</button>
+            <span id="recStatus" class="rec-status"></span>
+            <div id="audioPreview" class="existing"></div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if errors %}
+        <ul class="error-list">
+        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="form-actions">
+        <button type="submit" class="btn primary">{{ _('save') }}</button>
+        <a href="{{ url_for('lands_list') }}" class="btn ghost">{{ _('cancel') }}</a>
+    </div>
+</form>
+{% endblock %}

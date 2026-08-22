@@ -1,0 +1,24 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <h1>{{ _('view') }}: {{ party.full_name }}</h1>
+    <a href="{{ url_for(kind + '_list') }}" class="btn ghost">{{ _('back') }}</a>
+</section>
+
+<div class="detail">
+    <div class="detail-grid">
+        <div class="field"><span class="k">{{ _('full_name') }}</span><span class="v">{{ party.full_name }}</span></div>
+        <div class="field"><span class="k">{{ _('email') }}</span><span class="v">{{ party.email or '—' }}</span></div>
+        <div class="field"><span class="k">{{ _('phone') }}</span><span class="v">{{ party.phone }}</span></div>
+        <div class="field"><span class="k">{{ _('address') }}</span><span class="v">{{ party.address or '—' }}</span></div>
+        <div class="field" style="grid-column: 1 / -1;"><span class="k">{{ _('notes') }}</span><span class="v">{{ party.notes or '—' }}</span></div>
+    </div>
+
+    <div class="detail-actions">
+        <a href="{{ url_for(kind + '_edit', pid=party.id) }}" class="btn primary">{{ _('edit') }}</a>
+        <button type="button" class="btn danger"
+                data-delete data-endpoint="/{{ kind }}" data-id="{{ party.id }}" data-title="{{ party.full_name }}">{{ _('remove') }}</button>
+    </div>
+</div>
+{% endblock %}

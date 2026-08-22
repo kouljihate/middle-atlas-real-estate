@@ -1,0 +1,49 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <h1>{% if party %}{{ _('edit_' + kind) }}{% else %}{{ _('add_' + kind) }}{% endif %}</h1>
+    <a href="{{ url_for(kind + '_list') }}" class="btn ghost">{{ _('back') }}</a>
+</section>
+
+{% set errors_map = {} %}
+{% for e in errors %}
+    {% set parts = e.split(': ', 1) %}
+    {% if parts|length == 2 %}
+        {% set _ = errors_map.update({parts[0]: parts[1]}) %}
+    {% endif %}
+{% endfor %}
+
+{% macro field(name, label, value, type='text') %}
+<div class="form-group">
+    <label for="{{ name }}">{{ label }}</label>
+    <input id="{{ name }}" name="{{ name }}" type="{{ type }}"
+           value="{{ value or '' }}" class="input"
+           {% if name in errors_map %}aria-invalid="true"{% endif %}>
+    {% if name in errors_map %}<small class="err">{{ errors_map[name] }}</small>{% endif %}
+</div>
+{% endmacro %}
+
+<form method="post" class="land-form" novalidate>
+    {{ field('full_name', _('full_name'), party.full_name if party else data.get('full_name')) }}
+    {{ field('email', _('email'), party.email if party else data.get('email')) }}
+    {{ field('phone', _('phone'), party.phone if party else data.get('phone')) }}
+    {{ field('address', _('address'), party.address if party else data.get('address')) }}
+
+    <div class="form-group">
+        <label for="notes">{{ _('notes') }}</label>
+        <textarea id="notes" name="notes" rows="4" class="input">{{ party.notes if party else data.get('notes') or '' }}</textarea>
+    </div>
+
+    {% if errors %}
+        <ul class="error-list">
+        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="form-actions">
+        <button type="submit" class="btn primary">{{ _('save') }}</button>
+        <a href="{{ url_for(kind + '_list') }}" class="btn ghost">{{ _('cancel') }}</a>
+    </div>
+</form>
+{% endblock %}

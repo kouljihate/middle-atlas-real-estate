@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="{{ get_lang() }}" dir="{{ dir() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{{ _('app_title') }}</title>
+    <meta name="theme-color" content="#3a7d44">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/favicon-32.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Atlas RE">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="logo" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="17" cy="7" r="3" fill="#ffd166"/>
+                    <path d="M2 19l6-7 4 4 3-4 7 7z" fill="#3a7d44"/>
+                    <rect x="0" y="19" width="24" height="3" fill="#2f6b39"/>
+                </svg>
+            </span>
+            <a href="{{ url_for('dashboard') }}" class="brand-link">{{ _('app_title') }}</a>
+        </div>
+        <nav class="nav">
+            <a href="{{ url_for('dashboard') }}" class="nav-link">{{ _('dashboard') }}</a>
+            <a href="{{ url_for('affairs_list') }}" class="nav-link">{{ _('affairs') }}</a>
+            <a href="{{ url_for('lands_list') }}" class="nav-link">{{ _('list_lands') }}</a>
+            <a href="{{ url_for('customer_list') }}" class="nav-link">{{ _('customers') }}</a>
+            <a href="{{ url_for('seller_list') }}" class="nav-link">{{ _('sellers') }}</a>
+            <a href="{{ url_for('mac_admin') }}" class="nav-link">{{ _('mac_settings') }}</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                {% for category, msg in messages %}
+                    <div class="flash flash-{{ category }}">{{ msg }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-col">
+            <a href="{{ url_for('dashboard') }}" class="nav-link">{{ _('dashboard') }}</a>
+            <a href="{{ url_for('affairs_list') }}" class="nav-link">{{ _('affairs') }}</a>
+            <a href="{{ url_for('lands_list') }}" class="nav-link">{{ _('list_lands') }}</a>
+            <a href="{{ url_for('customer_list') }}" class="nav-link">{{ _('customers') }}</a>
+            <a href="{{ url_for('seller_list') }}" class="nav-link">{{ _('sellers') }}</a>
+            <a href="{{ url_for('mac_admin') }}" class="nav-link">{{ _('mac_settings') }}</a>
+        </div>
+        <div class="footer-col footer-lang">
+            <span class="lang-label">{{ _('language') }}:</span>
+            <div class="lang-switch">
+                <a href="{{ url_for('set_lang', lang='en') }}" class="{{ 'active' if get_lang()=='en' }}">EN</a>
+                <a href="{{ url_for('set_lang', lang='ar') }}" class="{{ 'active' if get_lang()=='ar' }}">ع</a>
+            </div>
+        </div>
+        <div class="footer-col footer-copy">
+            <span>{{ _('app_title') }} @{{ now_year }}</span>
+            <span class="footer-ver">v{{ version }}</span>
+        </div>
+    </footer>
+
+    <div id="deleteModal" class="modal" hidden>
+        <div class="modal-backdrop" data-close></div>
+        <div class="modal-card" role="dialog" aria-modal="true">
+            <h2>{{ _('confirm_delete') }}</h2>
+            <p>{{ _('delete_warning') }} <strong id="modalLandTitle"></strong>?</p>
+            <p class="muted">{{ _('delete_question') }}</p>
+            <form id="deleteForm" method="post">
+                <div class="modal-actions">
+                    <button type="button" class="btn ghost" data-close>{{ _('cancel') }}</button>
+                    <button type="submit" class="btn danger">{{ _('delete') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register(
+                    '{{ url_for("static", filename="sw.js") }}'
+                );
+            });
+        }
+    </script>
+</body>
+</html>

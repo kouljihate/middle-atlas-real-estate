@@ -1,0 +1,78 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <div class="page-head-row">
+        <h1>{{ _('affairs') }}</h1>
+        <a href="{{ url_for('affair_new') }}" class="btn primary">+ {{ _('add_affair') }}</a>
+    </div>
+    <form method="get" class="search">
+        <input type="search" name="q" value="{{ q or '' }}" placeholder="{{ _('search') }}…" aria-label="{{ _('search') }}">
+        <button type="submit" class="btn ghost">{{ _('search') }}</button>
+    </form>
+</section>
+
+{% if not affairs %}
+    <p class="empty">{{ _('no_affairs') }}</p>
+{% else %}
+    <div class="table-wrap">
+    <table class="lands-table">
+        <thead>
+            <tr>
+                <th>{{ _('id') }}</th>
+                <th>{{ _('seller') }}</th>
+                <th>{{ _('land') }}</th>
+                <th>{{ _('buyer') }}</th>
+                <th>{{ _('agreed_price') }}</th>
+                <th>{{ _('status') }}</th>
+                <th>{{ _('actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for a in affairs %}
+            <tr class="status-{{ a.status | replace(' ', '-') | lower }}">
+                <td data-label="{{ _('id') }}"><span class="ref">{{ a.ref or '—' }}</span></td>
+                <td data-label="{{ _('seller') }}">{{ a.seller_name }}</td>
+                <td data-label="{{ _('land') }}">{{ a.land_title }}</td>
+                <td data-label="{{ _('buyer') }}">{{ a.buyer_name }}</td>
+                <td data-label="{{ _('agreed_price') }}">
+                    {% if a.agreed_price is not none %}{{ "{:,.0f}".format(a.agreed_price) }}{% else %}—{% endif %}
+                </td>
+                <td data-label="{{ _('status') }}">
+                    <span class="status-badge status-{{ a.status | replace(' ', '-') | lower }}">{{ status_label(a.status) }}</span>
+                </td>
+                <td data-label="{{ _('actions') }}">
+                    <div class="actions-cell">
+                        <a href="{{ url_for('affair_view', affair_id=a.id) }}" class="icon-btn view" title="{{ _('view') }}" aria-label="{{ _('view') }}">
+                            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
+                        <a href="{{ url_for('affair_edit', affair_id=a.id) }}" class="icon-btn edit" title="{{ _('edit') }}" aria-label="{{ _('edit') }}">
+                            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                        </a>
+                        <button type="button" class="icon-btn delete" title="{{ _('remove') }}" aria-label="{{ _('remove') }}"
+                                data-delete data-endpoint="/affair" data-id="{{ a.id }}" data-title="{{ _('affair') }} #{{ a.id }}">
+                            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="pagination" aria-label="Pagination">
+        <a class="page-btn {{ 'disabled' if page == 1 }}"
+           href="{{ url_for('affairs_list', page=page-1, q=q) }}">‹</a>
+        {% for p in range(1, total_pages + 1) %}
+            <a class="page-btn {{ 'active' if p == page }}"
+               href="{{ url_for('affairs_list', page=p, q=q) }}">{{ p }}</a>
+        {% endfor %}
+        <a class="page-btn {{ 'disabled' if page == total_pages }}"
+           href="{{ url_for('affairs_list', page=page+1, q=q) }}">›</a>
+        <span class="page-info">{{ total }} {{ _('affairs') }} · {{ page }}/{{ total_pages }}</span>
+    </nav>
+    {% endif %}
+{% endif %}
+{% endblock %}

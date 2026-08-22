@@ -1,0 +1,56 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <h1>{{ _('view') }}: {{ land.title }}</h1>
+    <a href="{{ url_for('lands_list') }}" class="btn ghost">{{ _('back') }}</a>
+</section>
+
+<div class="detail">
+    <div class="detail-grid">
+        <div class="field"><span class="k">{{ _('id') }}</span><span class="v ref">{{ land.ref or '—' }}</span></div>
+        <div class="field"><span class="k">{{ _('title') }}</span><span class="v">{{ land.title }}</span></div>
+        <div class="field"><span class="k">{{ _('location') }}</span><span class="v">{{ land.location }}</span></div>
+        <div class="field"><span class="k">{{ _('area') }}</span><span class="v">{{ "{:,.0f}".format(land.area) }} m²</span></div>
+        <div class="field"><span class="k">{{ _('price') }}</span><span class="v">{{ "{:,.0f}".format(land.price) }}</span></div>
+        <div class="field"><span class="k">{{ _('owner') }}</span><span class="v">{{ land.owner_name }}</span></div>
+        <div class="field"><span class="k">{{ _('description') }}</span><span class="v">{{ land.description or '—' }}</span></div>
+    </div>
+
+    {% if land.photos %}
+    <div class="detail-section"><h3>{{ _('photos') }}</h3>
+        <div class="media-grid">
+            {% for p in land.photos %}<img src="{{ url_for('static', filename=p) }}" alt="">{% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if land.videos %}
+    <div class="detail-section"><h3>{{ _('videos') }}</h3>
+        <div class="media-grid">
+            {% for v in land.videos %}<video src="{{ url_for('static', filename=v) }}" controls></video>{% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if land.audios %}
+    <div class="detail-section"><h3>{{ _('audios') }}</h3>
+        {% for a in land.audios %}<audio controls src="{{ url_for('static', filename=a) }}" style="display:block;margin:.3rem 0"></audio>{% endfor %}
+    </div>
+    {% endif %}
+
+    {% if land.documents %}
+    <div class="detail-section"><h3>{{ _('documents') }}</h3>
+        <ul class="doc-list">
+            {% for d in land.documents %}<li><a href="{{ url_for('static', filename=d) }}" target="_blank" rel="noopener">📄 {{ d.split('/')[-1] }}</a></li>{% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="detail-actions">
+        <a href="{{ url_for('land_edit', land_id=land.id) }}" class="btn primary">{{ _('edit') }}</a>
+        <button type="button" class="btn danger"
+                data-delete data-endpoint="/land" data-id="{{ land.id }}" data-title="{{ land.title }}">{{ _('remove') }}</button>
+    </div>
+</div>
+{% endblock %}

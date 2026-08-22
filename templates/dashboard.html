@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <h1>{{ _('dashboard') }}</h1>
+    <a href="{{ url_for('affair_new') }}" class="btn primary">+ {{ _('add_affair') }}</a>
+</section>
+
+<div class="dash-cards">
+    <div class="dash-card">
+        <span class="n">{{ n_lands }}</span>
+        <a class="l" href="{{ url_for('lands_list') }}">{{ _('list_lands') }}</a>
+    </div>
+    <div class="dash-card">
+        <span class="n">{{ n_sellers }}</span>
+        <a class="l" href="{{ url_for('seller_list') }}">{{ _('sellers') }}</a>
+    </div>
+    <div class="dash-card">
+        <span class="n">{{ n_buyers }}</span>
+        <a class="l" href="{{ url_for('customer_list') }}">{{ _('customers') }}</a>
+    </div>
+    <div class="dash-card">
+        <span class="n">{{ n_affairs }}</span>
+        <a class="l" href="{{ url_for('affairs_list') }}">{{ _('affairs') }}</a>
+    </div>
+    <div class="dash-card">
+        <span class="n">{{ n_active }}</span>
+        <span class="l">{{ _('active_affairs') }}</span>
+    </div>
+    <div class="dash-card">
+        <span class="n">{{ "{:,.0f}".format(agreed_total) }}</span>
+        <span class="l">{{ _('agreed_price') }}</span>
+    </div>
+</div>
+
+<section class="card dash-panel">
+    <h2>{{ _('activity') }}</h2>
+    <div class="heatmap">
+        {% for week in weeks %}
+        <div class="heat-col">
+            {% for d in week %}
+            <div class="heat-cell h{{ d.level }}" title="{{ d.count }} — {{ d.iso }}"></div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="heat-legend">
+        <span>{{ _('less') }}</span>
+        <i class="heat-cell h0"></i><i class="heat-cell h1"></i><i class="heat-cell h2"></i><i class="heat-cell h3"></i><i class="heat-cell h4"></i>
+        <span>{{ _('more') }}</span>
+    </div>
+</section>
+
+<section class="card dash-panel">
+    <h2>{{ _('status') }}</h2>
+    <div class="pipe-row">
+        {% for s in statuses %}
+        <a class="chip-link status-badge status-{{ s.status | replace(' ', '-') | lower }}"
+           href="{{ url_for('affairs_list', q=s.status) }}">
+            {{ status_label(s.status) }} · {{ s.n }}
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

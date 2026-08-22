@@ -1,0 +1,47 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <h1>{{ _('mac_settings') }}</h1>
+    <div class="page-head-row">
+        <a href="{{ url_for('lands_list') }}" class="btn ghost">{{ _('back') }}</a>
+        <form method="post" class="inline">
+            <input type="hidden" name="action" value="logout">
+            <button type="submit" class="btn small ghost">{{ _('mac_lock') }}</button>
+        </form>
+    </div>
+</section>
+
+<div class="mac-panel">
+    <form method="post" class="mac-toggle">
+        <p>{{ _('mac_enabled') }}: <strong>{{ 'ON' if allowlist.enabled else 'OFF' }}</strong></p>
+        <p class="muted">Your device MAC: <code>{{ server_mac }}</code></p>
+        <input type="hidden" name="action" value="toggle">
+        <button type="submit" class="btn small">{{ 'Disable' if allowlist.enabled else 'Enable' }}</button>
+    </form>
+
+    <form method="post" class="mac-add">
+        <input type="hidden" name="action" value="add">
+        <input name="mac" class="input" placeholder="AA:BB:CC:DD:EE:FF" required>
+        <button type="submit" class="btn primary">{{ _('mac_add') }}</button>
+    </form>
+
+    <h3>{{ _('mac_current') }}</h3>
+    {% if allowlist.allowed %}
+        <ul class="mac-list">
+        {% for m in allowlist.allowed %}
+            <li>
+                <code>{{ m }}</code>
+                <form method="post" class="inline">
+                    <input type="hidden" name="action" value="remove">
+                    <input type="hidden" name="mac" value="{{ m }}">
+                    <button type="submit" class="btn small danger">{{ _('remove') }}</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty">{{ _('mac_empty') }}</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <div class="page-head-row">
+        <h1>{{ _(kind + 's') }}</h1>
+        <a href="{{ url_for(kind + '_new') }}" class="btn primary">+ {{ _('add_' + kind) }}</a>
+    </div>
+    <form method="get" class="search">
+        <input type="search" name="q" value="{{ q or '' }}" placeholder="{{ _('search') }}…" aria-label="{{ _('search') }}">
+        <button type="submit" class="btn ghost">{{ _('search') }}</button>
+    </form>
+</section>
+
+{% if not parties %}
+    <p class="empty">{{ _('no_' + kind + 's') }}</p>
+{% else %}
+    <div class="table-wrap">
+    <table class="lands-table">
+        <thead>
+            <tr>
+                <th>{{ _('full_name') }}</th>
+                <th>{{ _('email') }}</th>
+                <th>{{ _('phone') }}</th>
+                <th>{{ _('address') }}</th>
+                <th>{{ _('actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in parties %}
+            <tr>
+                <td data-label="{{ _('full_name') }}">{{ p.full_name }}</td>
+                <td data-label="{{ _('email') }}">{{ p.email or '—' }}</td>
+                <td data-label="{{ _('phone') }}">{{ p.phone }}</td>
+                <td data-label="{{ _('address') }}">{{ p.address or '—' }}</td>
+                <td data-label="{{ _('actions') }}">
+                    <div class="actions-cell">
+                        <a href="{{ url_for(kind + '_view', pid=p.id) }}" class="icon-btn view" title="{{ _('view') }}" aria-label="{{ _('view') }}">
+                            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
+                        <a href="{{ url_for(kind + '_edit', pid=p.id) }}" class="icon-btn edit" title="{{ _('edit') }}" aria-label="{{ _('edit') }}">
+                            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                        </a>
+                        <button type="button" class="icon-btn delete" title="{{ _('remove') }}" aria-label="{{ _('remove') }}"
+                                data-delete data-endpoint="/{{ kind }}" data-id="{{ p.id }}" data-title="{{ p.full_name }}">
+                            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="pagination" aria-label="Pagination">
+        <a class="page-btn {{ 'disabled' if page == 1 }}"
+           href="{{ url_for(kind + '_list', page=page-1, q=q) }}">‹</a>
+        {% for pg in range(1, total_pages + 1) %}
+            <a class="page-btn {{ 'active' if pg == page }}"
+               href="{{ url_for(kind + '_list', page=pg, q=q) }}">{{ pg }}</a>
+        {% endfor %}
+        <a class="page-btn {{ 'disabled' if page == total_pages }}"
+           href="{{ url_for(kind + '_list', page=page+1, q=q) }}">›</a>
+        <span class="page-info">{{ total }} · {{ page }}/{{ total_pages }}</span>
+    </nav>
+    {% endif %}
+{% endif %}
+{% endblock %}

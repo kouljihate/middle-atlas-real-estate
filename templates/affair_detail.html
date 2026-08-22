@@ -1,0 +1,59 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+    <h1>{{ _('view_affair') }} #{{ affair.id }}</h1>
+    <a href="{{ url_for('affairs_list') }}" class="btn ghost">{{ _('back') }}</a>
+</section>
+
+<div class="detail">
+    <div class="detail-grid">
+        <div class="field">
+            <span class="k">{{ _('id') }}</span>
+            <span class="v ref">{{ affair.ref or '—' }}</span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('seller') }}</span>
+            <span class="v">{% if seller %}<a href="{{ url_for('seller_view', pid=seller.id) }}">{{ seller.full_name }}</a>{% else %}—{% endif %}</span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('buyer') }}</span>
+            <span class="v">{% if buyer %}<a href="{{ url_for('customer_view', pid=buyer.id) }}">{{ buyer.full_name }}</a>{% else %}—{% endif %}</span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('land') }}</span>
+            <span class="v">{% if land %}<a href="{{ url_for('land_view', land_id=land.id) }}">{{ land.title }}</a>{% else %}—{% endif %}</span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('status') }}</span>
+            <span class="v"><span class="status-badge status-{{ affair.status | replace(' ', '-') | lower }}">{{ status_label(affair.status) }}</span></span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('agreed_price') }}</span>
+            <span class="v">{% if affair.agreed_price is not none %}{{ "{:,.0f}".format(affair.agreed_price) }}{% else %}—{% endif %}</span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('deposit') }}</span>
+            <span class="v">{% if affair.deposit is not none %}{{ "{:,.0f}".format(affair.deposit) }}{% else %}—{% endif %}</span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('commission') }}</span>
+            <span class="v">{% if affair.commission is not none %}{{ "{:,.0f}".format(affair.commission) }}{% else %}—{% endif %}</span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('closing_date') }}</span>
+            <span class="v">{{ affair.closing_date or '—' }}</span>
+        </div>
+        <div class="field field-wide">
+            <span class="k">{{ _('notes') }}</span>
+            <span class="v">{{ affair.notes or '—' }}</span>
+        </div>
+    </div>
+
+    <div class="detail-actions">
+        <a href="{{ url_for('affair_edit', affair_id=affair.id) }}" class="btn primary">{{ _('edit') }}</a>
+        <button type="button" class="btn danger"
+                data-delete data-endpoint="/affair" data-id="{{ affair.id }}" data-title="{{ _('affair') }} #{{ affair.id }}">{{ _('remove') }}</button>
+    </div>
+</div>
+{% endblock %}
