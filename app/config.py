@@ -9,10 +9,26 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 # Swap to any free hosted database by setting the DATABASE_URL env var, e.g.
 #   PostgreSQL (Neon / Supabase free tier): postgresql+psycopg://user:pass@host/dbname
 DB_PATH = os.path.join(DATA_DIR, "lands.db")
-DATABASE_URL = os.environ.get(
+
+
+def _normalize_db_url(url: str) -> str:
+    """Accept raw provider URLs (e.g. Neon's `postgresql://...`).
+
+    This project ships the psycopg v3 driver (not psycopg2), so plain
+    `postgresql://` / legacy `postgres://` URLs are rewritten to the
+    `postgresql+psycopg://` scheme SQLAlchemy needs.
+    """
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://"):]
+    if url.startswith("postgresql://"):
+        url = "postgresql+psycopg://" + url[len("postgresql://"):]
+    return url
+
+
+DATABASE_URL = _normalize_db_url(os.environ.get(
     "DATABASE_URL",
     "sqlite:///" + os.path.join(DATA_DIR, "lands.db").replace("\\", "/"),
-)
+))
 
 UPLOAD_DIR = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_PHOTO_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp"}

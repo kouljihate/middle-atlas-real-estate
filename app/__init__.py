@@ -428,6 +428,31 @@ def assetlinks():
     return Response(config.ASSETLINKS_JSON, mimetype="application/json")
 
 
+@app.route("/api/db-status")
+def api_db_status():
+    """Live database health for the footer pill (public, no login needed).
+
+    ready    (green)  - test query answers in under 1s.
+    idle     (orange) - reachable but slow (e.g. waking from sleep).
+    not_ready (red)   - unreachable / error.
+    """
+    import time
+
+    from flask import jsonify
+    from sqlalchemy import text as sa_text
+
+    try:
+        start = time.monotonic()
+        with db.engine.connect() as conn:
+            conn.execute(sa_text("SELECT 1"))
+        latency_ms = int((time.monotonic() - start) * 1000)
+    except Exception:
+        return jsonify({"state": "not_ready"})
+    if latency_ms < 1000:
+        return jsonify({"state": "ready", "latency_ms": latency_ms})
+    return jsonify({"state": "idle", "latency_ms": latency_ms})
+
+
 # ---------------------------------------------------------------------------
 # MAC allow-list middleware
 # ---------------------------------------------------------------------------

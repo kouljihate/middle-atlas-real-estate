@@ -82,6 +82,7 @@
 
     <footer class="footer">
         <div class="footer-col footer-ver-col">
+            <span>{{ _('app_title') }}</span>
             <span class="footer-ver">v{{ version }}</span>
         </div>
         <div class="footer-col footer-lang">
@@ -91,7 +92,12 @@
             </div>
         </div>
         <div class="footer-col footer-copy">
-            <span>{{ _('app_title') }} @{{ now_year }}</span>
+            <span class="db-status" id="db-status"
+                  data-ready="{{ _('db_ready') }}"
+                  data-idle="{{ _('db_idle') }}"
+                  data-down="{{ _('db_down') }}">
+                <i class="db-dot" aria-hidden="true"></i><span class="db-label">…</span>
+            </span>
         </div>
     </footer>
 

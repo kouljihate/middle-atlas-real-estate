@@ -108,7 +108,14 @@ body {
     font-size: .9rem;
 }
 .footer-col { display: flex; align-items: center; justify-content: center; gap: .6rem; flex-wrap: wrap; }
-.footer-copy { font-weight: 700; color: var(--ink); display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.footer-copy { font-weight: 700; color: var(--ink); display: flex; gap: .5rem; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+.footer-ver-col { justify-content: flex-start; }
+.db-status { display: inline-flex; align-items: center; gap: .4rem; font-size: .78rem; font-weight: 600; color: var(--muted); }
+.db-dot { width: 10px; height: 10px; border-radius: 50%; background: #9aa5b1; display: inline-block; }
+.db-dot.db-ready { background: #22a35c; box-shadow: 0 0 0 3px rgba(34, 163, 92, .18); }
+.db-dot.db-idle { background: #ef9b1a; box-shadow: 0 0 0 3px rgba(239, 155, 26, .18); }
+.db-dot.db-down { background: #d33a2c; box-shadow: 0 0 0 3px rgba(211, 58, 44, .18); }
+body.auth-page .db-status { color: rgba(255, 255, 255, .85); }
 .footer-ver { font-weight: 600; color: var(--muted); font-size: .8rem; background: #e4efec; padding: .1rem .5rem; border-radius: 999px; }
 .lang-label { font-weight: 600; }
 .lang-switch { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; background: var(--surface); }

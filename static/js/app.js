@@ -156,6 +156,33 @@
 })();
 
 // ---------------------------------------------------------------------------
+// Footer: live database status pill (green ready / orange idle / red down).
+// ---------------------------------------------------------------------------
+(function () {
+    const el = document.getElementById('db-status');
+    if (!el) return;
+    const dot = el.querySelector('.db-dot');
+    const label = el.querySelector('.db-label');
+
+    function render(state) {
+        dot.className = 'db-dot db-' + state;
+        label.textContent =
+            state === 'ready' ? el.dataset.ready :
+            state === 'idle' ? el.dataset.idle : el.dataset.down;
+    }
+
+    function poll() {
+        fetch('/api/db-status', {headers: {'Accept': 'application/json'}})
+            .then(function (r) { return r.json(); })
+            .then(function (d) { render(d.state || 'not_ready'); })
+            .catch(function () { render('not_ready'); });
+    }
+
+    poll();
+    setInterval(poll, 20000);
+})();
+
+// ---------------------------------------------------------------------------
 // Affair form: populate the Land select based on the chosen Seller.
 // ---------------------------------------------------------------------------
 (function () {
