@@ -86,6 +86,9 @@ extended by an AI assistant or another developer.
    mirrors affair changes; agent dashboard gains a yearly commission card;
    rename Customers to Buyers in UI; switch Arabic font to VIP Rawy Thin.
    Bump APP_VERSION to 1.3.0, update docs and push."
+13. **Ops polish**: "Live `/api/db-status` footer pill (ready/idle/down),
+    footer column layout, Neon URL auto-normalization + `start-neon.bat`.
+    Bump APP_VERSION to 1.4.0, update docs and push."
 
 ## 3. Conventions for AI collaboration
 
