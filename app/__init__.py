@@ -148,6 +148,48 @@ def _apply_agent_scope(data: dict, scope):
     return data
 
 
+def _sync_land_from_affair(data: dict):
+    """Mirror an affair's status onto its linked land (Cancelled → Open)."""
+    land_id = data.get("land_id")
+    status = (data.get("status") or "").strip()
+    if not land_id or not status:
+        return
+    if not db.get_land(land_id):
+        return
+    db.set_land_status(land_id, "Open" if status == "Cancelled" else status)
+
+
+def _resolve_land_seller(data: dict, scope):
+    """Link a land to its seller by owner name.
+
+    When no seller was picked explicitly, look up the owner name in the
+    sellers collection (case-insensitive): link the match if found,
+    otherwise create the seller so the new name is stored.
+    """
+    if data.get("seller_id"):
+        return data
+    name = (data.get("owner_name") or "").strip()
+    if not name:
+        return data
+    existing = next(
+        (s for s in db.get_all_parties("seller", scope)
+         if (s.get("full_name") or "").strip().lower() == name.lower()),
+        None,
+    )
+    if existing:
+        data["seller_id"] = existing["id"]
+    else:
+        data["seller_id"] = db.create_party("seller", {
+            "full_name": name,
+            "email": None,
+            "phone": None,
+            "address": None,
+            "notes": None,
+            "agent_id": scope,
+        })
+    return data
+
+
 # ---------------------------------------------------------------------------
 # Authentication routes
 # ---------------------------------------------------------------------------
@@ -516,6 +558,11 @@ def dashboard():
                  "n": sum(1 for a in affairs if a["status"] == s)}
                 for s, k in config.AFFAIR_STATUS_CHOICES]
     agreed_total = sum(a["agreed_price"] or 0 for a in affairs)
+    year_prefix = str(today.year)
+    commission_year = sum(
+        (a["commission"] or 0) for a in affairs
+        if (a.get("created_at") or "").startswith(year_prefix)
+    )
 
     return render_template(
         "dashboard.html",
@@ -529,6 +576,8 @@ def dashboard():
         n_affairs=len(affairs),
         n_active=len(active),
         agreed_total=agreed_total,
+        commission_year=commission_year,
+        year=today.year,
         peak=peak,
         today=today.isoformat(),
     )
@@ -579,7 +628,8 @@ def land_new():
         errors += validate_media()
 
         if validated and not errors:
-            db.create_land(validated.model_dump(), build_media(None))
+            payload = _resolve_land_seller(validated.model_dump(), scope)
+            db.create_land(payload, build_media(None))
             flash(_("save") + " ✓", "success")
             return redirect(url_for("lands_list"))
 
@@ -616,7 +666,8 @@ def land_edit(land_id):
         errors += validate_media()
 
         if validated and not errors:
-            db.update_land(land_id, validated.model_dump(), build_media(land))
+            payload = _resolve_land_seller(validated.model_dump(), scope)
+            db.update_land(land_id, payload, build_media(land))
             flash(_("save") + " ✓", "success")
             return redirect(url_for("lands_list"))
 
@@ -737,7 +788,9 @@ def affair_new():
             validated = None
 
         if validated and not errors:
-            db.create_affair(validated.model_dump())
+            payload = validated.model_dump()
+            db.create_affair(payload)
+            _sync_land_from_affair(payload)
             flash(_("save") + " ✓", "success")
             return redirect(url_for("affairs_list"))
 
@@ -777,7 +830,9 @@ def affair_edit(affair_id):
             validated = None
 
         if validated and not errors:
-            db.update_affair(affair_id, validated.model_dump())
+            payload = validated.model_dump()
+            db.update_affair(affair_id, payload)
+            _sync_land_from_affair(payload)
             flash(_("save") + " ✓", "success")
             return redirect(url_for("affairs_list"))
 

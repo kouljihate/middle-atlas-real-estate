@@ -8,6 +8,11 @@
 
 <div class="dash-cards">
     <div class="dash-card">
+        <span class="n">{{ n_affairs }}</span>
+        <a class="l" href="{{ url_for('affairs_list') }}">{{ _('affairs') }}</a>
+    </div>
+
+    <div class="dash-card">
         <span class="n">{{ n_lands }}</span>
         <a class="l" href="{{ url_for('lands_list') }}">{{ _('list_lands') }}</a>
     </div>
@@ -20,13 +25,15 @@
         <a class="l" href="{{ url_for('customer_list') }}">{{ _('customers') }}</a>
     </div>
     <div class="dash-card">
-        <span class="n">{{ n_affairs }}</span>
-        <a class="l" href="{{ url_for('affairs_list') }}">{{ _('affairs') }}</a>
-    </div>
-    <div class="dash-card">
         <span class="n">{{ n_active }}</span>
         <span class="l">{{ _('active_affairs') }}</span>
     </div>
+    {% if current_role() == 'agent' %}
+    <div class="dash-card">
+        <span class="n">{{ "{:,.0f}".format(commission_year) }} {{ currency }}</span>
+        <span class="l">{{ _('total_commission') }} {{ year }}</span>
+    </div>
+    {% endif %}
 </div>
 
 <section class="card dash-panel">

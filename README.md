@@ -12,7 +12,7 @@ addable to the home screen on Android/iOS).
 - **Lands** — CRUD with status (Open / In Discussion / Option / In Progress / Completed),
   per-land linked **seller**, media (photos, videos, audio, documents) and auto-generated
   reference IDs (`L-YYMMDDHHMN`).
-- **Customers & Sellers** — shared party model, fully bilingual forms & detail views.
+- **Buyers & Sellers** — shared party model, fully bilingual forms & detail views.
 - **Affairs (transactions)** — link a seller, a land and a buyer, track status, seller
   price, buyer offer, agreed price, deposit, auto-calculated commission (2.5% of the
   agreed price), closing date and timestamped notes (`YY-MM-DD HH:MM` + text, one
@@ -30,7 +30,13 @@ addable to the home screen on Android/iOS).
 - **Bilingual UI** — full EN / AR translations with RTL support, language switcher.
 - **PWA** — manifest, service worker (offline cache), installable, themed icons.
 - **Majorelle theme** — deep-teal + saffron Moroccan styling, frosted-glass centered
-  login, row-based responsive forms, Almaghrebi-Modern-Wahib for all Arabic text.
+  login, row-based responsive forms, VIP Rawy Thin for all Arabic text.
+- **Smart owner linking** — typing an owner name on a land auto-links (or creates)
+  the seller; phone is optional on parties.
+- **Land–affair status sync** — a land is Open while it has no affair; creating or
+  editing an affair mirrors its status onto the land (Cancelled → Open).
+- **Agent dashboard** — yearly Total Commission card (own scope, MAD) with
+  smaller numerals for the agent role.
 - **MAC allow-list gate** (optional) — restrict access to approved device MAC addresses.
 - **Portable storage** — SQLite by default; swap to any hosted database (e.g. Postgres)
   via the `DATABASE_URL` environment variable. No code changes required.
@@ -52,7 +58,7 @@ The app creates `data/lands.db` automatically on first run.
 | --- | --- | --- |
 | Database | `DATABASE_URL` | `sqlite:///<ROOT>/data/lands.db` |
 | Secret key | `SECRET_KEY` | `change-me-in-production` |
-| App version | `APP_VERSION` (shown in footer) | `1.2.0` |
+| App version | `APP_VERSION` (shown in footer) | `1.3.0` |
 | Currency | `CURRENCY` | `MAD` |
 | MAC filter | `MAC_FILTER_ENABLED` / `MAC_PASSWORD` | enabled, `LooK9LooK` |
 
@@ -151,4 +157,4 @@ the extracted APK, and install.
 
 ## License
 
-MIT — see source. Fonts: Comfortaa (OFL), Bouazzi Maghribi (custom).
+MIT — see source. Fonts: Comfortaa (OFL), VIP Rawy Thin (Arabic).

@@ -14,11 +14,12 @@
     {% endif %}
 {% endfor %}
 
-{% macro field(name, label, value, type='text', step=None) %}
+{% macro field(name, label, value, type='text', step=None, list=None) %}
 <div class="form-group">
     <label for="{{ name }}">{{ label }}</label>
     <input id="{{ name }}" name="{{ name }}" type="{{ type }}"
            value="{{ value or '' }}" {{ 'step='~step if step }}
+           {{ ('list='~list) if list }}
            class="input" {% if name in errors_map %}aria-invalid="true"{% endif %}>
     {% if name in errors_map %}<small class="err">{{ errors_map[name] }}</small>{% endif %}
 </div>
@@ -36,8 +37,14 @@
     </div>
 
     <div class="form-row row-2">
-        {{ field('owner_name', _('owner'), land.owner_name if land else data.get('owner_name')) }}
+        {{ field('owner_name', _('owner'), land.owner_name if land else data.get('owner_name'), 'text', None, 'seller_names') }}
+        <datalist id="seller_names">
+            {% for s in sellers %}
+            <option value="{{ s.full_name }}"></option>
+            {% endfor %}
+        </datalist>
 
+        {% if land %}
         <div class="form-group">
             <label for="seller_id">{{ _('seller') }}</label>
             <select id="seller_id" name="seller_id" class="input">
@@ -48,6 +55,7 @@
                 {% endfor %}
             </select>
         </div>
+        {% endif %}
     </div>
 
     <div class="form-group">
@@ -55,7 +63,7 @@
         <textarea id="description" name="description" rows="4" class="input">{{ land.description if land else data.get('description') or '' }}</textarea>
     </div>
 
-    <div class="form-row row-4">
+    <div class="form-row row-2">
     {% for k in media_kinds %}
     <div class="form-group">
         <label for="{{ k.field }}">{{ _(k.label_key) }}</label>
@@ -89,6 +97,7 @@
         </div>
         {% endif %}
     </div>
+    {% if loop.index == 2 %}</div><div class="form-row row-2">{% endif %}
     {% endfor %}
     </div>
 

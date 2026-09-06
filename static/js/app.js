@@ -210,7 +210,9 @@
     function addNote() {
         const text = input.value.trim();
         if (!text) return;
-        const line = stampNow() + '\t' + text;
+        const statusSel = document.getElementById('status');
+        const status = statusSel ? statusSel.value.trim() : '';
+        const line = stampNow() + '\t' + text + (status ? ' [' + status + ']' : '');
         notes.value = notes.value.trim() ? notes.value.replace(/\s+$/, '') + '\n' + line : line;
         input.value = '';
         input.focus();

@@ -14,7 +14,7 @@
     <meta name="apple-mobile-web-app-title" content="Atlas RE">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %} role-{{ current_role().value if current_role() else 'anon' }}">
     <header class="topbar">
         <div class="brand">
             <span class="logo" aria-hidden="true">

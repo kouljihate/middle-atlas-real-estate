@@ -108,7 +108,7 @@ class LandUpdate(LandBase):
 class PartyBase(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
     email: Optional[str] = Field(default=None, max_length=160)
-    phone: str = Field(min_length=5, max_length=30)
+    phone: Optional[str] = Field(default=None, max_length=30)
     address: Optional[str] = Field(default=None, max_length=200)
     notes: Optional[str] = Field(default=None, max_length=2000)
     agent_id: Optional[int] = None
@@ -118,7 +118,19 @@ class PartyBase(BaseModel):
     def coerce_agent_id(cls, v):
         return _coerce_optional_int(v)
 
-    @field_validator("full_name", "phone")
+    @field_validator("phone")
+    @classmethod
+    def phone_optional(cls, v: Optional[str]) -> Optional[str]:
+        if v in (None, ""):
+            return None
+        v = v.strip()
+        if not v:
+            return None
+        if len(v) < 5:
+            raise ValueError("phone must be at least 5 characters")
+        return v
+
+    @field_validator("full_name")
     @classmethod
     def strip_strings(cls, v: str) -> str:
         return v.strip()

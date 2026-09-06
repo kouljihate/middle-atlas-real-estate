@@ -57,7 +57,7 @@
             <span class="v">
                 {% if affair.notes and affair.notes.strip() %}
                 <div class="note-rows">
-                    {% for line in affair.notes.split('\n') %}
+                    {% for line in affair.notes.split('\n') | sort %}
                     {% if line.strip() %}
                     <div class="note-row">
                         {% if '\t' in line %}

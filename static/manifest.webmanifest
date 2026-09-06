@@ -1,7 +1,7 @@
 {
     "name": "Middle Atlas Real Estate",
     "short_name": "Atlas RE",
-    "description": "Manage lands, customers, sellers and affairs of the Middle Atlas.",
+    "description": "Manage lands, buyers, sellers and affairs of the Middle Atlas.",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

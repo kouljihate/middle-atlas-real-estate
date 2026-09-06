@@ -73,12 +73,19 @@ extended by an AI assistant or another developer.
 10. **Affair power fields**: "Show a read-only Affair ID preview (`A-YYMMDDHHMN`)
     first in the form; auto-calculate read-only commission as 2.5% of the agreed
     price; add persisted Seller Price + Buyer Offer first in the money row; add
-    timestamped notes (`YY-MM-DD HH:MM<TAB>text`, one row each, Notes readonly);
-    restrict the Land dropdown to the selected seller's lands (dynamic)."
+   timestamped notes (`YY-MM-DD HH:MM<TAB>text`, one row each, Notes readonly);
+   restrict the Land dropdown to the selected seller's lands (dynamic)."
 11. **Majorelle theme**: "Apply a deep-teal + saffron Moroccan theme (fonts
-    unchanged), frosted-glass centered login/register, 75% centered container,
-    row-based responsive forms, MAD currency after all prices (configurable via
-    `CURRENCY`). Bump APP_VERSION to 1.2.0, update docs and push."
+   unchanged), frosted-glass centered login/register, 75% centered container,
+   row-based responsive forms, MAD currency after all prices (configurable via
+   `CURRENCY`). Bump APP_VERSION to 1.2.0, update docs and push."
+12. **Smart data & polish**: "Owner name auto-links/creates the seller (seller
+   dropdown hidden on New Land, phone optional); persisted Seller Price +
+   Buyer Offer; notes sorted with status brackets (new notes stamped
+   `stamp + text + [Status]`, one readonly textarea per row); land status
+   mirrors affair changes; agent dashboard gains a yearly commission card;
+   rename Customers to Buyers in UI; switch Arabic font to VIP Rawy Thin.
+   Bump APP_VERSION to 1.3.0, update docs and push."
 
 ## 3. Conventions for AI collaboration
 

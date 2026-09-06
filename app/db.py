@@ -339,6 +339,16 @@ def delete_land(land_id: int) -> None:
         conn.execute(delete(lands).where(lands.c.id == land_id))
 
 
+def set_land_status(land_id: int, status: str) -> None:
+    """Update only a land's status (used to mirror affair status)."""
+    with engine.begin() as conn:
+        conn.execute(
+            lands.update().where(lands.c.id == land_id).values(
+                status=status, updated_at=now_iso()
+            )
+        )
+
+
 def clear_lands() -> None:
     """Remove every land row (used by the seed script for a clean reseed)."""
     with engine.begin() as conn:

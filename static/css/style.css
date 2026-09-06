@@ -9,8 +9,8 @@
     font-display: swap;
 }
 @font-face {
-    font-family: 'AlmaghrebiModernWahib';
-    src: url('../assets/fonts/Almaghrebi-Modern-Wahib.ttf') format('truetype');
+    font-family: 'VIPRawyThin';
+    src: url('../assets/fonts/VIP-Rawy-Thin.ttf') format('truetype');
     font-weight: 400 700;
     font-style: normal;
     font-display: swap;
@@ -45,7 +45,7 @@
 
 body {
     margin: 0;
-    font-family: 'Comfortaa', 'AlmaghrebiModernWahib', 'Segoe UI', Tahoma, sans-serif;
+    font-family: 'Comfortaa', 'VIPRawyThin', 'Segoe UI', Tahoma, sans-serif;
     background-color: var(--bg);
     background-image:
         radial-gradient(42rem 22rem at 85% -6rem, rgba(23, 163, 165, .16), transparent 70%),
@@ -60,7 +60,7 @@ body {
 }
 
 [dir="rtl"] body {
-    font-family: 'AlmaghrebiModernWahib', 'Comfortaa', 'Segoe UI', sans-serif;
+    font-family: 'VIPRawyThin', 'Comfortaa', 'Segoe UI', sans-serif;
     font-size: calc(1em + 6px);
     line-height: 1.7;
 }
@@ -642,6 +642,7 @@ body.auth-page .lang-switch .lang-btn.active { background: var(--gold); color: #
 }
 .dash-card:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(10, 79, 82, .14); }
 .dash-card .n { color: var(--primary-dark); }
+body.role-agent .dash-card .n { font-size: 1.1rem; }
 
 /* Flash messages: accent edge */
 .flash { border-inline-start-width: 4px; }
