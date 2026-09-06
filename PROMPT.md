@@ -65,6 +65,20 @@ extended by an AI assistant or another developer.
    filter overridable via `MAC_FILTER_ENABLED` (off for public hosts), serve
    `/.well-known/assetlinks.json` for TWA trust, and document Deploy + Android
    build steps. Bump APP_VERSION to 1.1.0 and push."
+9. **Auth & agents**: "Add login/register, five roles (admin/agent/seller/buyer/
+   visitor) with a permission matrix (`app/auth.py`), user management screens,
+   and an admin-managed Agents entity linked to login accounts; scope every
+   land/party/affair query, dropdown, count and direct URL to the logged-in
+   agent (403 on cross-access)."
+10. **Affair power fields**: "Show a read-only Affair ID preview (`A-YYMMDDHHMN`)
+    first in the form; auto-calculate read-only commission as 2.5% of the agreed
+    price; add persisted Seller Price + Buyer Offer first in the money row; add
+    timestamped notes (`YY-MM-DD HH:MM<TAB>text`, one row each, Notes readonly);
+    restrict the Land dropdown to the selected seller's lands (dynamic)."
+11. **Majorelle theme**: "Apply a deep-teal + saffron Moroccan theme (fonts
+    unchanged), frosted-glass centered login/register, 75% centered container,
+    row-based responsive forms, MAD currency after all prices (configurable via
+    `CURRENCY`). Bump APP_VERSION to 1.2.0, update docs and push."
 
 ## 3. Conventions for AI collaboration
 

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ _('edit_agent') if agent else _('add_agent') }}</h1>
+    <a href="{{ url_for('agent_list') }}" class="btn ghost">&larr; {{ _('back') }}</a>
+</div>
+
+{% if errors %}
+<div class="flash-stack">
+    {% for e in errors %}
+    <div class="flash flash-error">{{ e }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post" class="form-card">
+    <div class="form-group">
+        <label for="full_name">{{ _('full_name') }}</label>
+        <input type="text" id="full_name" name="full_name" required
+               value="{{ data.get('full_name', '') }}">
+    </div>
+
+    <div class="form-group">
+        <label for="email">{{ _('email') }}</label>
+        <input type="email" id="email" name="email"
+               value="{{ data.get('email', '') or '' }}">
+    </div>
+
+    <div class="form-group">
+        <label for="phone">{{ _('phone') }}</label>
+        <input type="text" id="phone" name="phone"
+               value="{{ data.get('phone', '') or '' }}">
+    </div>
+
+    <div class="form-group">
+        <label for="address">{{ _('address') }}</label>
+        <input type="text" id="address" name="address"
+               value="{{ data.get('address', '') or '' }}">
+    </div>
+
+    <div class="form-group">
+        <label for="notes">{{ _('notes') }}</label>
+        <textarea id="notes" name="notes" rows="3" class="input">{{ data.get('notes', '') or '' }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="user_id">{{ _('linked_user') }}</label>
+        <select id="user_id" name="user_id" class="input">
+            <option value="">— {{ _('no_linked_user') }} —</option>
+            {% set current = data.get('user_id', '') %}
+            {% for u in users %}
+            <option value="{{ u.id }}" {{ 'selected' if u.id|string == current|string }}>
+                {{ u.username }} ({{ u.full_name }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-actions">
+        <a href="{{ url_for('agent_list') }}" class="btn ghost">{{ _('cancel') }}</a>
+        <button type="submit" class="btn primary">{{ _('save') }}</button>
+    </div>
+</form>
+{% endblock %}

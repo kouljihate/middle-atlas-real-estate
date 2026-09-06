@@ -25,21 +25,29 @@
 {% endmacro %}
 
 <form method="post" enctype="multipart/form-data" class="land-form" novalidate>
-    {{ field('title', _('title'), land.title if land else data.get('title')) }}
-    {{ field('location', _('location'), land.location if land else data.get('location')) }}
-    {{ field('area', _('area'), land.area if land else data.get('area'), 'number', 'any') }}
-    {{ field('price', _('price'), land.price if land else data.get('price'), 'number', 'any') }}
-    {{ field('owner_name', _('owner'), land.owner_name if land else data.get('owner_name')) }}
+    <div class="form-row row-2">
+        {{ field('title', _('title'), land.title if land else data.get('title')) }}
+        {{ field('location', _('location'), land.location if land else data.get('location')) }}
+    </div>
 
-    <div class="form-group">
-        <label for="seller_id">{{ _('seller') }}</label>
-        <select id="seller_id" name="seller_id" class="input">
-            <option value="">{{ _('seller') }}</option>
-            {% set current_seller = land.seller_id if land else data.get('seller_id') %}
-            {% for s in sellers %}
-                <option value="{{ s.id }}" {{ 'selected' if s.id|string == current_seller|string }}>{{ s.full_name }}</option>
-            {% endfor %}
-        </select>
+    <div class="form-row row-2">
+        {{ field('area', _('area'), land.area if land else data.get('area'), 'number', 'any') }}
+        {{ field('price', _('price') + ' (' + currency + ')', land.price if land else data.get('price'), 'number', 'any') }}
+    </div>
+
+    <div class="form-row row-2">
+        {{ field('owner_name', _('owner'), land.owner_name if land else data.get('owner_name')) }}
+
+        <div class="form-group">
+            <label for="seller_id">{{ _('seller') }}</label>
+            <select id="seller_id" name="seller_id" class="input">
+                <option value="">{{ _('seller') }}</option>
+                {% set current_seller = land.seller_id if land else data.get('seller_id') %}
+                {% for s in sellers %}
+                    <option value="{{ s.id }}" {{ 'selected' if s.id|string == current_seller|string }}>{{ s.full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
 
     <div class="form-group">
@@ -47,6 +55,7 @@
         <textarea id="description" name="description" rows="4" class="input">{{ land.description if land else data.get('description') or '' }}</textarea>
     </div>
 
+    <div class="form-row row-4">
     {% for k in media_kinds %}
     <div class="form-group">
         <label for="{{ k.field }}">{{ _(k.label_key) }}</label>
@@ -81,6 +90,7 @@
         {% endif %}
     </div>
     {% endfor %}
+    </div>
 
     {% if errors %}
         <ul class="error-list">

@@ -17,3 +17,8 @@ static/uploads/*
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# Android build artifacts & local logs
+android/*.jar
+android/*.log
+android/*.err

@@ -31,13 +31,14 @@ class LandBase(BaseModel):
     description: Optional[str] = Field(default=None, max_length=2000)
     status: str = Field(default="Open")
     seller_id: Optional[int] = None
+    agent_id: Optional[int] = None
 
     @field_validator("title", "location", "owner_name")
     @classmethod
     def strip_strings(cls, v: str) -> str:
         return v.strip()
 
-    @field_validator("seller_id", mode="before")
+    @field_validator("seller_id", "agent_id", mode="before")
     @classmethod
     def coerce_seller_id(cls, v):
         return _coerce_optional_int(v)
@@ -57,19 +58,22 @@ class AffairBase(BaseModel):
     seller_id: Optional[int] = None
     land_id: Optional[int] = None
     buyer_id: Optional[int] = None
+    agent_id: Optional[int] = None
     status: str = Field(default="Open")
+    seller_price: Optional[float] = None
+    buyer_offer: Optional[float] = None
     agreed_price: Optional[float] = None
     deposit: Optional[float] = None
     commission: Optional[float] = None
     closing_date: Optional[str] = Field(default=None, max_length=20)
     notes: Optional[str] = Field(default=None, max_length=2000)
 
-    @field_validator("seller_id", "land_id", "buyer_id", mode="before")
+    @field_validator("seller_id", "land_id", "buyer_id", "agent_id", mode="before")
     @classmethod
     def coerce_ids(cls, v):
         return _coerce_optional_int(v)
 
-    @field_validator("agreed_price", "deposit", "commission", mode="before")
+    @field_validator("seller_price", "buyer_offer", "agreed_price", "deposit", "commission", mode="before")
     @classmethod
     def coerce_floats(cls, v):
         return _coerce_optional_float(v)
@@ -107,6 +111,12 @@ class PartyBase(BaseModel):
     phone: str = Field(min_length=5, max_length=30)
     address: Optional[str] = Field(default=None, max_length=200)
     notes: Optional[str] = Field(default=None, max_length=2000)
+    agent_id: Optional[int] = None
+
+    @field_validator("agent_id", mode="before")
+    @classmethod
+    def coerce_agent_id(cls, v):
+        return _coerce_optional_int(v)
 
     @field_validator("full_name", "phone")
     @classmethod
@@ -129,6 +139,52 @@ class PartyCreate(PartyBase):
 
 class PartyUpdate(PartyBase):
     """Payload for updating a customer or seller."""
+
+
+class AgentBase(BaseModel):
+    full_name: str = Field(min_length=2, max_length=120)
+    email: Optional[str] = Field(default=None, max_length=160)
+    phone: Optional[str] = Field(default=None, max_length=30)
+    address: Optional[str] = Field(default=None, max_length=200)
+    notes: Optional[str] = Field(default=None, max_length=2000)
+    user_id: Optional[int] = None
+
+    @field_validator("user_id", mode="before")
+    @classmethod
+    def coerce_user_id(cls, v):
+        return _coerce_optional_int(v)
+
+    @field_validator("full_name")
+    @classmethod
+    def strip_name(cls, v: str) -> str:
+        return v.strip()
+
+    @field_validator("phone")
+    @classmethod
+    def phone_valid(cls, v: Optional[str]) -> Optional[str]:
+        if not v:
+            return None
+        v = v.strip()
+        if v and len(v) < 5:
+            raise ValueError("phone must be at least 5 characters")
+        return v or None
+
+    @field_validator("email")
+    @classmethod
+    def email_valid(cls, v: Optional[str]) -> Optional[str]:
+        if not v:
+            return None
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", v):
+            raise ValueError("invalid email address")
+        return v
+
+
+class AgentCreate(AgentBase):
+    """Payload for creating an agent."""
+
+
+class AgentUpdate(AgentBase):
+    """Payload for updating an agent."""
 
 
 # Allowed media extensions (enforced both here and in the upload handler).

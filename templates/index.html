@@ -36,7 +36,7 @@
                 <td data-label="{{ _('title') }}">{{ l.title }}</td>
                 <td data-label="{{ _('location') }}">{{ l.location }}</td>
                 <td data-label="{{ _('area') }}">{{ "{:,.0f}".format(l.area) }} m²</td>
-                <td data-label="{{ _('price') }}">{{ "{:,.0f}".format(l.price) }}</td>
+                <td data-label="{{ _('price') }}">{{ "{:,.0f}".format(l.price) }} {{ currency }}</td>
                 <td data-label="{{ _('owner') }}">{{ l.owner_name }}</td>
                 <td data-label="{{ _('status') }}">
                     <span class="status-badge status-{{ l.status | replace(' ', '-') | lower }}">{{ status_label(l.status) }}</span>
@@ -50,7 +50,7 @@
                             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
                         </a>
                         <button type="button" class="icon-btn delete" title="{{ _('remove') }}" aria-label="{{ _('remove') }}"
-                                data-delete data-endpoint="/land" data-id="{{ l.id }}" data-title="{{ l.title }}">
+                                data-delete data-endpoint="/land" data-id="{{ l.id }}" data-title="{{ l.ref or l.title }}">
                             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </div>

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block body_class %}auth-page{% endblock %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-head">
+            <span class="auth-logo" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="17" cy="7" r="3" fill="#ffd166"/>
+                    <path d="M2 19l6-7 4 4 3-4 7 7z" fill="#ffffff" opacity=".95"/>
+                    <rect x="0" y="19" width="24" height="3" fill="#ffffff" opacity=".6"/>
+                </svg>
+            </span>
+            <h1>{{ _('app_title') }}</h1>
+            <h2>{{ _('register') }}</h2>
+        </div>
+
+        {% if errors %}
+        <div class="flash-stack">
+            {% for e in errors %}
+            <div class="flash flash-error">{{ e }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            <div class="form-group">
+                <label for="username">{{ _('username') }}</label>
+                <input type="text" id="username" name="username" required
+                       value="{{ data.get('username', '') }}" minlength="3" autofocus
+                       class="input" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">{{ _('password') }}</label>
+                <input type="password" id="password" name="password" required minlength="6"
+                       class="input" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+                <label for="full_name">{{ _('full_name') }}</label>
+                <input type="text" id="full_name" name="full_name" required
+                       value="{{ data.get('full_name', '') }}" class="input"
+                       autocomplete="name">
+            </div>
+            <div class="form-group">
+                <label for="email">{{ _('email') }}</label>
+                <input type="email" id="email" name="email"
+                       value="{{ data.get('email', '') }}" class="input"
+                       autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label for="phone">{{ _('phone') }}</label>
+                <input type="text" id="phone" name="phone"
+                       value="{{ data.get('phone', '') }}" class="input"
+                       autocomplete="tel">
+            </div>
+            <button type="submit" class="btn primary full-width">{{ _('register') }}</button>
+        </form>
+
+        <p class="auth-alt">
+            {{ _('has_account') }}
+            <a href="{{ url_for('auth_login') }}">{{ _('login') }}</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

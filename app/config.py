@@ -66,7 +66,10 @@ MAC_PASSWORD = "LooK9LooK"
 SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
 
 # App version (displayed in the footer). Bump on every release.
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.2.0"
+
+# Default currency, shown after every price. Override with CURRENCY env var.
+CURRENCY = os.environ.get("CURRENCY", "MAD")
 
 # MAC allow-list is meant for LAN deployments. On a public/hosted deployment
 # client MAC addresses are not available, so the filter must be disabled.
@@ -78,3 +81,8 @@ MAC_FILTER_ENABLED = os.environ.get("MAC_FILTER_ENABLED", "true").lower() in (
 # (Android TWA) verification. Set ASSETLINKS_JSON to the generated content
 # (contains the SHA256 of your app's signing key). Defaults to empty.
 ASSETLINKS_JSON = os.environ.get("ASSETLINKS_JSON", "[]")
+
+# Default admin account (created on first run if no users exist)
+DEFAULT_ADMIN_USERNAME = os.environ.get("DEFAULT_ADMIN_USER", "admin")
+DEFAULT_ADMIN_PASSWORD = os.environ.get("DEFAULT_ADMIN_PASS", "admin123")
+DEFAULT_ADMIN_NAME = os.environ.get("DEFAULT_ADMIN_NAME", "Administrator")

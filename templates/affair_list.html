@@ -36,7 +36,7 @@
                 <td data-label="{{ _('land') }}">{{ a.land_title }}</td>
                 <td data-label="{{ _('buyer') }}">{{ a.buyer_name }}</td>
                 <td data-label="{{ _('agreed_price') }}">
-                    {% if a.agreed_price is not none %}{{ "{:,.0f}".format(a.agreed_price) }}{% else %}—{% endif %}
+                    {% if a.agreed_price is not none %}{{ "{:,.0f}".format(a.agreed_price) }} {{ currency }}{% else %}—{% endif %}
                 </td>
                 <td data-label="{{ _('status') }}">
                     <span class="status-badge status-{{ a.status | replace(' ', '-') | lower }}">{{ status_label(a.status) }}</span>
@@ -50,7 +50,7 @@
                             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
                         </a>
                         <button type="button" class="icon-btn delete" title="{{ _('remove') }}" aria-label="{{ _('remove') }}"
-                                data-delete data-endpoint="/affair" data-id="{{ a.id }}" data-title="{{ _('affair') }} #{{ a.id }}">
+                                data-delete data-endpoint="/affair" data-id="{{ a.id }}" data-title="{{ a.ref or ('#' ~ a.id) }}">
                             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </div>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ agent.full_name }}</h1>
+    <a href="{{ url_for('agent_list') }}" class="btn ghost">&larr; {{ _('back') }}</a>
+</div>
+
+<div class="detail-card">
+    <p><strong>{{ _('email') }}:</strong> {{ agent.email or '—' }}</p>
+    <p><strong>{{ _('phone') }}:</strong> {{ agent.phone or '—' }}</p>
+    <p><strong>{{ _('address') }}:</strong> {{ agent.address or '—' }}</p>
+    <p><strong>{{ _('notes') }}:</strong> {{ agent.notes or '—' }}</p>
+    <p><strong>{{ _('linked_user') }}:</strong>
+        {{ linked.username ~ ' (' ~ linked.full_name ~ ')' if linked else _('no_linked_user') }}</p>
+    <p><strong>{{ _('list_lands') }}:</strong> {{ stats.lands }}</p>
+    <p><strong>{{ _('affairs') }}:</strong> {{ stats.affairs }}</p>
+</div>
+
+<div class="form-actions">
+    <a href="{{ url_for('agent_edit', aid=agent.id) }}" class="btn primary">{{ _('edit') }}</a>
+</div>
+{% endblock %}

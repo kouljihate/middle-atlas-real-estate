@@ -6,13 +6,13 @@
     <a href="{{ url_for('lands_list') }}" class="btn ghost">{{ _('back') }}</a>
 </section>
 
-<div class="detail">
+<div class="detail form-centered detail-flush">
     <div class="detail-grid">
         <div class="field"><span class="k">{{ _('id') }}</span><span class="v ref">{{ land.ref or '—' }}</span></div>
         <div class="field"><span class="k">{{ _('title') }}</span><span class="v">{{ land.title }}</span></div>
         <div class="field"><span class="k">{{ _('location') }}</span><span class="v">{{ land.location }}</span></div>
         <div class="field"><span class="k">{{ _('area') }}</span><span class="v">{{ "{:,.0f}".format(land.area) }} m²</span></div>
-        <div class="field"><span class="k">{{ _('price') }}</span><span class="v">{{ "{:,.0f}".format(land.price) }}</span></div>
+        <div class="field"><span class="k">{{ _('price') }}</span><span class="v">{{ "{:,.0f}".format(land.price) }} {{ currency }}</span></div>
         <div class="field"><span class="k">{{ _('owner') }}</span><span class="v">{{ land.owner_name }}</span></div>
         <div class="field"><span class="k">{{ _('description') }}</span><span class="v">{{ land.description or '—' }}</span></div>
     </div>
@@ -50,7 +50,7 @@
     <div class="detail-actions">
         <a href="{{ url_for('land_edit', land_id=land.id) }}" class="btn primary">{{ _('edit') }}</a>
         <button type="button" class="btn danger"
-                data-delete data-endpoint="/land" data-id="{{ land.id }}" data-title="{{ land.title }}">{{ _('remove') }}</button>
+                data-delete data-endpoint="/land" data-id="{{ land.id }}" data-title="{{ land.ref or land.title }}">{{ _('remove') }}</button>
     </div>
 </div>
 {% endblock %}

@@ -6,7 +6,7 @@
     <a href="{{ url_for('affairs_list') }}" class="btn ghost">{{ _('back') }}</a>
 </section>
 
-<div class="detail">
+<div class="detail detail-centered">
     <div class="detail-grid">
         <div class="field">
             <span class="k">{{ _('id') }}</span>
@@ -29,16 +29,24 @@
             <span class="v"><span class="status-badge status-{{ affair.status | replace(' ', '-') | lower }}">{{ status_label(affair.status) }}</span></span>
         </div>
         <div class="field">
+            <span class="k">{{ _('seller_price') }}</span>
+            <span class="v">{% if affair.seller_price is not none %}{{ "{:,.0f}".format(affair.seller_price) }} {{ currency }}{% else %}—{% endif %}</span>
+        </div>
+        <div class="field">
+            <span class="k">{{ _('buyer_offer') }}</span>
+            <span class="v">{% if affair.buyer_offer is not none %}{{ "{:,.0f}".format(affair.buyer_offer) }} {{ currency }}{% else %}—{% endif %}</span>
+        </div>
+        <div class="field">
             <span class="k">{{ _('agreed_price') }}</span>
-            <span class="v">{% if affair.agreed_price is not none %}{{ "{:,.0f}".format(affair.agreed_price) }}{% else %}—{% endif %}</span>
+            <span class="v">{% if affair.agreed_price is not none %}{{ "{:,.0f}".format(affair.agreed_price) }} {{ currency }}{% else %}—{% endif %}</span>
         </div>
         <div class="field">
             <span class="k">{{ _('deposit') }}</span>
-            <span class="v">{% if affair.deposit is not none %}{{ "{:,.0f}".format(affair.deposit) }}{% else %}—{% endif %}</span>
+            <span class="v">{% if affair.deposit is not none %}{{ "{:,.0f}".format(affair.deposit) }} {{ currency }}{% else %}—{% endif %}</span>
         </div>
         <div class="field">
             <span class="k">{{ _('commission') }}</span>
-            <span class="v">{% if affair.commission is not none %}{{ "{:,.0f}".format(affair.commission) }}{% else %}—{% endif %}</span>
+            <span class="v">{% if affair.commission is not none %}{{ "{:,.0f}".format(affair.commission) }} {{ currency }}{% else %}—{% endif %}</span>
         </div>
         <div class="field">
             <span class="k">{{ _('closing_date') }}</span>
@@ -46,14 +54,32 @@
         </div>
         <div class="field field-wide">
             <span class="k">{{ _('notes') }}</span>
-            <span class="v">{{ affair.notes or '—' }}</span>
+            <span class="v">
+                {% if affair.notes and affair.notes.strip() %}
+                <div class="note-rows">
+                    {% for line in affair.notes.split('\n') %}
+                    {% if line.strip() %}
+                    <div class="note-row">
+                        {% if '\t' in line %}
+                        {% set parts = line.split('\t', 1) %}
+                        <span class="note-stamp">{{ parts[0] }}</span>
+                        <textarea class="input note-text" rows="2" readonly>{{ parts[1] }}</textarea>
+                        {% else %}
+                        <textarea class="input note-text" rows="2" readonly>{{ line }}</textarea>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% else %}—{% endif %}
+            </span>
         </div>
     </div>
 
     <div class="detail-actions">
         <a href="{{ url_for('affair_edit', affair_id=affair.id) }}" class="btn primary">{{ _('edit') }}</a>
         <button type="button" class="btn danger"
-                data-delete data-endpoint="/affair" data-id="{{ affair.id }}" data-title="{{ _('affair') }} #{{ affair.id }}">{{ _('remove') }}</button>
+                data-delete data-endpoint="/affair" data-id="{{ affair.id }}" data-title="{{ affair.ref or ('#' ~ affair.id) }}">{{ _('remove') }}</button>
     </div>
 </div>
 {% endblock %}

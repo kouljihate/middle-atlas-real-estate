@@ -13,12 +13,24 @@ addable to the home screen on Android/iOS).
   per-land linked **seller**, media (photos, videos, audio, documents) and auto-generated
   reference IDs (`L-YYMMDDHHMN`).
 - **Customers & Sellers** — shared party model, fully bilingual forms & detail views.
-- **Affairs (transactions)** — link a seller, a land and a buyer, track status, agreed
-  price, deposit, commission and closing date; auto reference IDs (`A-YYMMDDHHMN`).
-- **Dashboard** — KPI cards + a GitHub-style **affair activity heatmap** (last 26 weeks),
-  with status pipeline chips that deep-link into a filtered affair list.
+- **Affairs (transactions)** — link a seller, a land and a buyer, track status, seller
+  price, buyer offer, agreed price, deposit, auto-calculated commission (2.5% of the
+  agreed price), closing date and timestamped notes (`YY-MM-DD HH:MM` + text, one
+  per row); auto reference IDs (`A-YYMMDDHHMN`) shown read-only on the form.
+- **Users & roles** — login/register, roles (admin / agent / seller / buyer / visitor)
+  with a permission matrix enforced on every route and menu item.
+- **Agents** — admin-managed agent records linked to login accounts; an agent only
+  sees and touches his own lands, parties and affairs (list, counts, dropdowns and
+  direct URLs are all scoped; cross-access returns 403).
+- **MAD currency** — amounts display with the Moroccan Dirham (`150,000 MAD`);
+  override with the `CURRENCY` env var.
+- **Dashboard** — KPI cards + a GitHub-style **affair activity heatmap** (selectable
+  4/8/13/26/52-week range), with status pipeline chips that deep-link into a
+  filtered affair list.
 - **Bilingual UI** — full EN / AR translations with RTL support, language switcher.
 - **PWA** — manifest, service worker (offline cache), installable, themed icons.
+- **Majorelle theme** — deep-teal + saffron Moroccan styling, frosted-glass centered
+  login, row-based responsive forms, Almaghrebi-Modern-Wahib for all Arabic text.
 - **MAC allow-list gate** (optional) — restrict access to approved device MAC addresses.
 - **Portable storage** — SQLite by default; swap to any hosted database (e.g. Postgres)
   via the `DATABASE_URL` environment variable. No code changes required.
@@ -40,7 +52,8 @@ The app creates `data/lands.db` automatically on first run.
 | --- | --- | --- |
 | Database | `DATABASE_URL` | `sqlite:///<ROOT>/data/lands.db` |
 | Secret key | `SECRET_KEY` | `change-me-in-production` |
-| App version | `APP_VERSION` (shown in footer) | `1.0.0` |
+| App version | `APP_VERSION` (shown in footer) | `1.2.0` |
+| Currency | `CURRENCY` | `MAD` |
 | MAC filter | `MAC_FILTER_ENABLED` / `MAC_PASSWORD` | enabled, `LooK9LooK` |
 
 To use a hosted database (Neon / Supabase free tier, etc.):
@@ -62,8 +75,9 @@ python tests/clean_data.py    # wipe everything (keeps the schema)
 
 ```
 app/
-  __init__.py        Flask app + all routes + template globals
-  config.py          settings (DB, media, statuses, version)
+  __init__.py        Flask app + all routes + template globals (+ agent scoping)
+  auth.py            roles, permission matrix, login/role decorators
+  config.py          settings (DB, media, statuses, version, currency)
   db.py              SQLAlchemy Core data layer (portable, swappable DB)
   schemas.py         Pydantic validation schemas
   mac_filter.py      optional MAC allow-list middleware

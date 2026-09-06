@@ -189,3 +189,57 @@
         });
     });
 })();
+
+// ---------------------------------------------------------------------------
+// Affair form: quick "Add Note" appends a timestamped line
+// ("YY-MM-DD HH:MM<TAB>note") to the Notes textarea.
+// ---------------------------------------------------------------------------
+(function () {
+    const input = document.getElementById('new_note');
+    const btn = document.getElementById('add_note_btn');
+    const notes = document.getElementById('notes');
+    if (!input || !btn || !notes) return;
+
+    function stampNow() {
+        const d = new Date();
+        const p = function (n) { return String(n).padStart(2, '0'); };
+        return String(d.getFullYear()).slice(-2) + '-' + p(d.getMonth() + 1) +
+            '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+
+    function addNote() {
+        const text = input.value.trim();
+        if (!text) return;
+        const line = stampNow() + '\t' + text;
+        notes.value = notes.value.trim() ? notes.value.replace(/\s+$/, '') + '\n' + line : line;
+        input.value = '';
+        input.focus();
+    }
+
+    btn.addEventListener('click', addNote);
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addNote();
+        }
+    });
+})();
+
+// ---------------------------------------------------------------------------
+// Affair form: commission is read-only, auto-calculated as 2.5% of the
+// agreed price whenever the agreed price changes.
+// ---------------------------------------------------------------------------
+(function () {
+    const agreedEl = document.getElementById('agreed_price');
+    const commissionEl = document.getElementById('commission');
+    if (!agreedEl || !commissionEl) return;
+
+    agreedEl.addEventListener('input', function () {
+        const v = parseFloat(agreedEl.value);
+        if (!isNaN(v) && v >= 0) {
+            commissionEl.value = Math.round(v * 2.5) / 100;
+        } else {
+            commissionEl.value = '';
+        }
+    });
+})();

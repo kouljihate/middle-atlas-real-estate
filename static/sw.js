@@ -1,5 +1,5 @@
 // Middle Atlas Real Estate service worker — app-shell caching for offline use.
-const CACHE = 'atlasre-v1';
+const CACHE = 'atlasre-v4';
 const PRECACHE = [
     '/',
     '/static/css/style.css',

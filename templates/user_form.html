@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ _('edit_user') if user else _('new_user') }}</h1>
+    <a href="{{ url_for('user_list') }}" class="btn ghost">&larr; {{ _('back') }}</a>
+</div>
+
+{% if errors %}
+<div class="flash-stack">
+    {% for e in errors %}
+    <div class="flash flash-error">{{ e }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post" class="form-card">
+    <div class="form-group">
+        <label for="username">{{ _('username') }}</label>
+        <input type="text" id="username" name="username" required minlength="3"
+               value="{{ data.get('username', '') }}" {{ 'readonly' if user else '' }}>
+    </div>
+
+    {% if not user %}
+    <div class="form-group">
+        <label for="password">{{ _('password') }}</label>
+        <input type="password" id="password" name="password" required minlength="6">
+    </div>
+    {% else %}
+    <div class="form-group">
+        <label for="password">{{ _('new_password') }} ({{ _('optional') }})</label>
+        <input type="password" id="password" name="password" minlength="6">
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+        <label for="full_name">{{ _('full_name') }}</label>
+        <input type="text" id="full_name" name="full_name" required
+               value="{{ data.get('full_name', '') }}">
+    </div>
+
+    <div class="form-group">
+        <label for="email">{{ _('email') }}</label>
+        <input type="email" id="email" name="email"
+               value="{{ data.get('email', '') or '' }}">
+    </div>
+
+    <div class="form-group">
+        <label for="phone">{{ _('phone') }}</label>
+        <input type="text" id="phone" name="phone"
+               value="{{ data.get('phone', '') or '' }}">
+    </div>
+
+    <div class="form-group">
+        <label for="role">{{ _('role') }}</label>
+        <select id="role" name="role" required>
+            {% for r in roles %}
+            <option value="{{ r.value }}" {{ 'selected' if data.get('role') == r.value }}>
+                {{ role_labels.get(r, r.value) }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    {% if user %}
+    <div class="form-group">
+        <label class="checkbox-label">
+            <input type="checkbox" name="is_active" value="1"
+                   {{ 'checked' if data.get('is_active', 1) }}>
+            {{ _('active') }}
+        </label>
+    </div>
+    {% endif %}
+
+    <div class="form-actions">
+        <a href="{{ url_for('user_list') }}" class="btn ghost">{{ _('cancel') }}</a>
+        <button type="submit" class="btn primary">{{ _('save') }}</button>
+    </div>
+</form>
+{% endblock %}

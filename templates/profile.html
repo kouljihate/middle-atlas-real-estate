@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ _('profile') }}</h1>
+</div>
+
+{% if errors %}
+<div class="flash-stack">
+    {% for e in errors %}
+    <div class="flash flash-error">{{ e }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="form-card">
+    <div class="profile-header">
+        <div class="profile-avatar">{{ user.full_name[0] | upper }}</div>
+        <div class="profile-info">
+            <h2>{{ user.full_name }}</h2>
+            <span class="role-badge role-{{ user.role }}">{{ role_labels.get(user.role, user.role) }}</span>
+            <span class="profile-username">@{{ user.username }}</span>
+        </div>
+    </div>
+
+    <form method="post" class="form-card-inner">
+        <div class="form-group">
+            <label for="full_name">{{ _('full_name') }}</label>
+            <input type="text" id="full_name" name="full_name" required
+                   value="{{ data.get('full_name', '') }}">
+        </div>
+
+        <div class="form-group">
+            <label for="email">{{ _('email') }}</label>
+            <input type="email" id="email" name="email"
+                   value="{{ data.get('email', '') or '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">{{ _('phone') }}</label>
+            <input type="text" id="phone" name="phone"
+                   value="{{ data.get('phone', '') or '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="password">{{ _('new_password') }} ({{ _('optional') }})</label>
+            <input type="password" id="password" name="password" minlength="6">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">{{ _('save') }}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

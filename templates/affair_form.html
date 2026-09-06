@@ -36,25 +36,33 @@
 </div>
 {% endmacro %}
 
-<form method="post" class="land-form" novalidate>
-    {{ select('seller_id', _('seller'), seller_options,
-              data.seller_id if data else (affair.seller_id if affair else ''),
-              _('seller')) }}
+<form method="post" class="land-form form-centered" novalidate>
+    <div class="form-row row-4">
+        <div class="form-group">
+            <label for="affair_ref">{{ _('affair_id') }}</label>
+            <input id="affair_ref" type="text" class="input"
+                   value="{{ affair.ref if affair else ref_preview }}" readonly disabled>
+        </div>
 
-    <div class="form-group">
-        <label for="land_id">{{ _('land') }}</label>
-        <select id="land_id" name="land_id" class="input">
-            <option value="">{{ _('land') }}</option>
-            {% set current_land = data.land_id if data else (affair.land_id if affair else '') %}
-            {% for l in land_options %}
-                <option value="{{ l.id }}" {{ 'selected' if l.id|string == current_land|string }}>{{ l.title }}</option>
-            {% endfor %}
-        </select>
+        {{ select('buyer_id', _('buyer'), buyer_options,
+                  data.buyer_id if data else (affair.buyer_id if affair else ''),
+                  _('buyer')) }}
+
+        {{ select('seller_id', _('seller'), seller_options,
+                  data.seller_id if data else (affair.seller_id if affair else ''),
+                  _('seller')) }}
+
+        <div class="form-group">
+            <label for="land_id">{{ _('land') }}</label>
+            <select id="land_id" name="land_id" class="input" data-placeholder="{{ _('land') }}">
+                <option value="">{{ _('land') }}</option>
+                {% set current_land = data.land_id if data else (affair.land_id if affair else '') %}
+                {% for l in land_options %}
+                    <option value="{{ l.id }}" {{ 'selected' if l.id|string == current_land|string }}>{{ l.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
-
-    {{ select('buyer_id', _('buyer'), buyer_options,
-              data.buyer_id if data else (affair.buyer_id if affair else ''),
-              _('buyer')) }}
 
     <div class="form-group">
         <label for="status">{{ _('status') }}</label>
@@ -66,14 +74,32 @@
         </select>
     </div>
 
-    {{ field('agreed_price', _('agreed_price'), data.agreed_price if data else (affair.agreed_price if affair else ''), 'number', 'any') }}
-    {{ field('deposit', _('deposit'), data.deposit if data else (affair.deposit if affair else ''), 'number', 'any') }}
-    {{ field('commission', _('commission'), data.commission if data else (affair.commission if affair else ''), 'number', 'any') }}
-    {{ field('closing_date', _('closing_date'), data.closing_date if data else (affair.closing_date if affair else ''), 'date') }}
+    <div class="form-row row-6">
+        {{ field('seller_price', _('seller_price') + ' (' + currency + ')', data.seller_price if data else (affair.seller_price if affair else ''), 'number', 'any') }}
+        {{ field('buyer_offer', _('buyer_offer') + ' (' + currency + ')', data.buyer_offer if data else (affair.buyer_offer if affair else ''), 'number', 'any') }}
+        {{ field('agreed_price', _('agreed_price') + ' (' + currency + ')', data.agreed_price if data else (affair.agreed_price if affair else ''), 'number', 'any') }}
+        {{ field('deposit', _('deposit') + ' (' + currency + ')', data.deposit if data else (affair.deposit if affair else ''), 'number', 'any') }}
+        <div class="form-group">
+            <label for="commission">{{ _('commission') }} ({{ currency }})</label>
+        <input id="commission" name="commission" type="number" step="any" readonly
+               value="{{ data.commission if data else (affair.commission if affair else '') }}"
+               class="input" {% if 'commission' in errors_map %}aria-invalid="true"{% endif %}>
+        {% if 'commission' in errors_map %}<small class="err">{{ errors_map['commission'] }}</small>{% endif %}
+    </div>
+        {{ field('closing_date', _('closing_date'), data.closing_date if data else (affair.closing_date if affair else ''), 'date') }}
+    </div>
+
+    <div class="form-group">
+        <label for="new_note">{{ _('add_note') }}</label>
+        <div class="note-add">
+            <input id="new_note" type="text" class="input" autocomplete="off">
+            <button type="button" id="add_note_btn" class="btn primary">{{ _('add_note') }}</button>
+        </div>
+    </div>
 
     <div class="form-group">
         <label for="notes">{{ _('notes') }}</label>
-        <textarea id="notes" name="notes" rows="4" class="input">{{ data.notes if data else (affair.notes if affair else '') or '' }}</textarea>
+        <textarea id="notes" name="notes" rows="4" class="input" readonly>{{ data.notes if data else (affair.notes if affair else '') or '' }}</textarea>
     </div>
 
     {% if errors %}

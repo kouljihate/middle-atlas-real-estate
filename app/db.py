@@ -16,6 +16,25 @@ MEDIA_COLUMNS = [k["column"] for k in config.MEDIA_KINDS]
 engine = create_engine(config.DATABASE_URL)
 metadata = MetaData()
 
+
+# ---------------------------------------------------------------------------
+# Users table (authentication & roles)
+# ---------------------------------------------------------------------------
+users = Table(
+    "users", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("username", String(80), nullable=False, unique=True),
+    Column("password_hash", String(256), nullable=False),
+    Column("full_name", String(120), nullable=False),
+    Column("email", String(160)),
+    Column("phone", String(30)),
+    Column("role", String(20), nullable=False, server_default="visitor"),
+    Column("party_id", Integer),          # linked customer/seller id
+    Column("is_active", Integer, nullable=False, server_default="1"),
+    Column("created_at", String(40), nullable=False),
+    Column("updated_at", String(40), nullable=False),
+)
+
 # ---------------------------------------------------------------------------
 # Table definitions (portable across SQLite / PostgreSQL / MySQL via Core)
 # ---------------------------------------------------------------------------
@@ -37,6 +56,7 @@ lands = Table(
     *_media_columns(),
     Column("status", String(40), nullable=False, server_default="Open"),
     Column("seller_id", Integer),
+    Column("agent_id", Integer),
     Column("created_at", String(40), nullable=False),
     Column("updated_at", String(40), nullable=False),
 )
@@ -51,6 +71,7 @@ def _party_table(name: str) -> Table:
         Column("phone", String(30)),
         Column("address", String(200)),
         Column("notes", Text),
+        Column("agent_id", Integer),
         Column("created_at", String(40), nullable=False),
         Column("updated_at", String(40), nullable=False),
     )
@@ -59,6 +80,19 @@ def _party_table(name: str) -> Table:
 customers = _party_table("customers")
 sellers = _party_table("sellers")
 
+agents = Table(
+    "agents", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("full_name", String(120), nullable=False),
+    Column("email", String(160)),
+    Column("phone", String(30)),
+    Column("address", String(200)),
+    Column("notes", Text),
+    Column("user_id", Integer),
+    Column("created_at", String(40), nullable=False),
+    Column("updated_at", String(40), nullable=False),
+)
+
 affairs = Table(
     "affairs", metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
@@ -66,7 +100,10 @@ affairs = Table(
     Column("seller_id", Integer),
     Column("land_id", Integer),
     Column("buyer_id", Integer),
+    Column("agent_id", Integer),
     Column("status", String(40), nullable=False, server_default="Open"),
+    Column("seller_price", Float),
+    Column("buyer_offer", Float),
     Column("agreed_price", Float),
     Column("deposit", Float),
     Column("commission", Float),
@@ -145,12 +182,29 @@ def _migrate_legacy_columns() -> None:
             stmts.append("ALTER TABLE lands ADD COLUMN status TEXT DEFAULT 'Open'")
         if "seller_id" not in cols:
             stmts.append("ALTER TABLE lands ADD COLUMN seller_id INTEGER")
+        if "agent_id" not in cols:
+            stmts.append("ALTER TABLE lands ADD COLUMN agent_id INTEGER")
         if "ref" not in cols:
             stmts.append("ALTER TABLE lands ADD COLUMN ref TEXT")
     if "affairs" in tables:
         cols = {c["name"] for c in insp.get_columns("affairs")}
         if "ref" not in cols:
             stmts.append("ALTER TABLE affairs ADD COLUMN ref TEXT")
+        if "agent_id" not in cols:
+            stmts.append("ALTER TABLE affairs ADD COLUMN agent_id INTEGER")
+        if "seller_price" not in cols:
+            stmts.append("ALTER TABLE affairs ADD COLUMN seller_price REAL")
+        if "buyer_offer" not in cols:
+            stmts.append("ALTER TABLE affairs ADD COLUMN buyer_offer REAL")
+    for _t in ("customers", "sellers"):
+        if _t in tables:
+            cols = {c["name"] for c in insp.get_columns(_t)}
+            if "agent_id" not in cols:
+                stmts.append(f"ALTER TABLE {_t} ADD COLUMN agent_id INTEGER")
+    if "agents" in tables:
+        cols = {c["name"] for c in insp.get_columns("agents")}
+        if "user_id" not in cols:
+            stmts.append("ALTER TABLE agents ADD COLUMN user_id INTEGER")
     if stmts:
         with engine.begin() as conn:
             for s in stmts:
@@ -195,17 +249,23 @@ def _order(table):
 # ---------------------------------------------------------------------------
 # Lands
 # ---------------------------------------------------------------------------
-def get_all_lands() -> list[dict]:
+def get_all_lands(agent_id: Optional[int] = None) -> list[dict]:
+    stmt = select(lands)
+    if agent_id is not None:
+        stmt = stmt.where(lands.c.agent_id == agent_id)
     with engine.connect() as conn:
         rows = conn.execute(
-            select(lands).order_by(*_order(lands))
+            stmt.order_by(*_order(lands))
         ).mappings().all()
     return [_row_to_dict(r) for r in rows]
 
 
-def get_lands_page(q: str, page: int, per_page: int):
+def get_lands_page(q: str, page: int, per_page: int,
+                   agent_id: Optional[int] = None):
     """Return (items, total) for a search + pagination query."""
     stmt = select(lands)
+    if agent_id is not None:
+        stmt = stmt.where(lands.c.agent_id == agent_id)
     if q:
         like = f"%{q}%"
         stmt = stmt.where(or_(
@@ -245,6 +305,7 @@ def create_land(data: dict, media: dict) -> int:
         "description": data.get("description"),
         "status": data.get("status", "Open"),
         "seller_id": data.get("seller_id"),
+        "agent_id": data.get("agent_id"),
         **{c: json.dumps(media.get(c, []), ensure_ascii=False) for c in MEDIA_COLUMNS},
         "created_at": ts,
         "updated_at": ts,
@@ -265,6 +326,7 @@ def update_land(land_id: int, data: dict, media: dict) -> None:
         "description": data.get("description"),
         "status": data.get("status", "Open"),
         "seller_id": data.get("seller_id"),
+        "agent_id": data.get("agent_id"),
         **{c: json.dumps(media.get(c, []), ensure_ascii=False) for c in MEDIA_COLUMNS},
         "updated_at": ts,
     }
@@ -286,16 +348,22 @@ def clear_lands() -> None:
 # ---------------------------------------------------------------------------
 # Customers / Sellers (parties)
 # ---------------------------------------------------------------------------
-def get_all_parties(kind: str) -> list[dict]:
+def get_all_parties(kind: str, agent_id: Optional[int] = None) -> list[dict]:
     t = _PARTIES[kind]
+    stmt = select(t)
+    if agent_id is not None:
+        stmt = stmt.where(t.c.agent_id == agent_id)
     with engine.connect() as conn:
-        rows = conn.execute(select(t).order_by(*_order(t))).mappings().all()
+        rows = conn.execute(stmt.order_by(*_order(t))).mappings().all()
     return [dict(r) for r in rows]
 
 
-def get_parties_page(kind: str, q: str, page: int, per_page: int):
+def get_parties_page(kind: str, q: str, page: int, per_page: int,
+                     agent_id: Optional[int] = None):
     t = _PARTIES[kind]
     stmt = select(t)
+    if agent_id is not None:
+        stmt = stmt.where(t.c.agent_id == agent_id)
     if q:
         like = f"%{q}%"
         stmt = stmt.where(or_(
@@ -329,6 +397,7 @@ def create_party(kind: str, data: dict) -> int:
         "phone": data.get("phone"),
         "address": data.get("address"),
         "notes": data.get("notes"),
+        "agent_id": data.get("agent_id"),
         "created_at": ts,
         "updated_at": ts,
     }
@@ -345,6 +414,7 @@ def update_party(kind: str, pid: int, data: dict) -> None:
         "phone": data.get("phone"),
         "address": data.get("address"),
         "notes": data.get("notes"),
+        "agent_id": data.get("agent_id"),
         "updated_at": now_iso(),
     }
     with engine.begin() as conn:
@@ -367,16 +437,22 @@ def clear_parties() -> None:
 # ---------------------------------------------------------------------------
 # Affairs (transactions linking a seller, a buyer and a land)
 # ---------------------------------------------------------------------------
-def get_all_affairs() -> list[dict]:
+def get_all_affairs(agent_id: Optional[int] = None) -> list[dict]:
+    stmt = select(affairs)
+    if agent_id is not None:
+        stmt = stmt.where(affairs.c.agent_id == agent_id)
     with engine.connect() as conn:
         rows = conn.execute(
-            select(affairs).order_by(*_order(affairs))
+            stmt.order_by(*_order(affairs))
         ).mappings().all()
     return [dict(r) for r in rows]
 
 
-def get_affairs_page(q: str, page: int, per_page: int):
+def get_affairs_page(q: str, page: int, per_page: int,
+                     agent_id: Optional[int] = None):
     stmt = select(affairs)
+    if agent_id is not None:
+        stmt = stmt.where(affairs.c.agent_id == agent_id)
     if q:
         like = f"%{q}%"
         stmt = stmt.where(or_(affairs.c.status.ilike(like),
@@ -407,7 +483,10 @@ def create_affair(data: dict) -> int:
         "seller_id": data.get("seller_id"),
         "land_id": data.get("land_id"),
         "buyer_id": data.get("buyer_id"),
+        "agent_id": data.get("agent_id"),
         "status": data.get("status", "Open"),
+        "seller_price": data.get("seller_price"),
+        "buyer_offer": data.get("buyer_offer"),
         "agreed_price": data.get("agreed_price"),
         "deposit": data.get("deposit"),
         "commission": data.get("commission"),
@@ -426,7 +505,10 @@ def update_affair(affair_id: int, data: dict) -> None:
         "seller_id": data.get("seller_id"),
         "land_id": data.get("land_id"),
         "buyer_id": data.get("buyer_id"),
+        "agent_id": data.get("agent_id"),
         "status": data.get("status", "Open"),
+        "seller_price": data.get("seller_price"),
+        "buyer_offer": data.get("buyer_offer"),
         "agreed_price": data.get("agreed_price"),
         "deposit": data.get("deposit"),
         "commission": data.get("commission"),
@@ -454,3 +536,187 @@ def clear_all() -> None:
     clear_lands()
     clear_parties()
     clear_affairs()
+    clear_agents()
+
+
+# ---------------------------------------------------------------------------
+# Agents (managed entity; lands/affairs/parties belong to an agent)
+# ---------------------------------------------------------------------------
+def get_agent(agent_id: int) -> Optional[dict]:
+    with engine.connect() as conn:
+        row = conn.execute(
+            select(agents).where(agents.c.id == agent_id)
+        ).mappings().first()
+    return dict(row) if row else None
+
+
+def get_agent_by_user_id(user_id: int) -> Optional[dict]:
+    with engine.connect() as conn:
+        row = conn.execute(
+            select(agents).where(agents.c.user_id == user_id)
+        ).mappings().first()
+    return dict(row) if row else None
+
+
+def get_all_agents() -> list[dict]:
+    with engine.connect() as conn:
+        rows = conn.execute(
+            select(agents).order_by(*_order(agents))
+        ).mappings().all()
+    return [dict(r) for r in rows]
+
+
+def get_agents_page(q: str, page: int, per_page: int):
+    stmt = select(agents)
+    if q:
+        like = f"%{q}%"
+        stmt = stmt.where(or_(
+            agents.c.full_name.ilike(like),
+            agents.c.email.ilike(like),
+            agents.c.phone.ilike(like),
+        ))
+    count_stmt = select(func.count()).select_from(stmt.subquery())
+    offset = max(0, (page - 1) * per_page)
+    with engine.connect() as conn:
+        total = conn.execute(count_stmt).scalar_one()
+        rows = conn.execute(
+            stmt.order_by(*_order(agents)).limit(per_page).offset(offset)
+        ).mappings().all()
+    return [dict(r) for r in rows], int(total)
+
+
+def create_agent(data: dict) -> int:
+    ts = now_iso()
+    vals = {
+        "full_name": data["full_name"],
+        "email": data.get("email"),
+        "phone": data.get("phone"),
+        "address": data.get("address"),
+        "notes": data.get("notes"),
+        "user_id": data.get("user_id"),
+        "created_at": ts,
+        "updated_at": ts,
+    }
+    with engine.begin() as conn:
+        res = conn.execute(agents.insert().values(**vals))
+        return int(res.inserted_primary_key[0])
+
+
+def update_agent(agent_id: int, data: dict) -> None:
+    vals = {
+        "full_name": data["full_name"],
+        "email": data.get("email"),
+        "phone": data.get("phone"),
+        "address": data.get("address"),
+        "notes": data.get("notes"),
+        "user_id": data.get("user_id"),
+        "updated_at": now_iso(),
+    }
+    with engine.begin() as conn:
+        conn.execute(agents.update().where(agents.c.id == agent_id).values(**vals))
+
+
+def delete_agent(agent_id: int) -> None:
+    with engine.begin() as conn:
+        conn.execute(delete(agents).where(agents.c.id == agent_id))
+
+
+def clear_agents() -> None:
+    with engine.begin() as conn:
+        conn.execute(delete(agents))
+
+
+# ---------------------------------------------------------------------------
+# Users (authentication)
+# ---------------------------------------------------------------------------
+def get_user_by_username(username: str) -> Optional[dict]:
+    with engine.connect() as conn:
+        row = conn.execute(
+            select(users).where(users.c.username == username)
+        ).mappings().first()
+    return dict(row) if row else None
+
+
+def get_user(user_id: int) -> Optional[dict]:
+    with engine.connect() as conn:
+        row = conn.execute(
+            select(users).where(users.c.id == user_id)
+        ).mappings().first()
+    return dict(row) if row else None
+
+
+def get_all_users() -> list[dict]:
+    with engine.connect() as conn:
+        rows = conn.execute(
+            select(users).order_by(users.c.id)
+        ).mappings().all()
+    return [dict(r) for r in rows]
+
+
+def get_users_page(q: str, page: int, per_page: int):
+    stmt = select(users)
+    if q:
+        like = f"%{q}%"
+        stmt = stmt.where(or_(
+            users.c.username.ilike(like),
+            users.c.full_name.ilike(like),
+            users.c.email.ilike(like),
+            users.c.role.ilike(like),
+        ))
+    count_stmt = select(func.count()).select_from(stmt.subquery())
+    offset = max(0, (page - 1) * per_page)
+    with engine.connect() as conn:
+        total = conn.execute(count_stmt).scalar_one()
+        rows = conn.execute(
+            stmt.order_by(users.c.id).limit(per_page).offset(offset)
+        ).mappings().all()
+    return [dict(r) for r in rows], int(total)
+
+
+def create_user(data: dict) -> int:
+    ts = now_iso()
+    vals = {
+        "username": data["username"],
+        "password_hash": data["password_hash"],
+        "full_name": data["full_name"],
+        "email": data.get("email"),
+        "phone": data.get("phone"),
+        "role": data.get("role", "visitor"),
+        "party_id": data.get("party_id"),
+        "is_active": 1,
+        "created_at": ts,
+        "updated_at": ts,
+    }
+    with engine.begin() as conn:
+        res = conn.execute(users.insert().values(**vals))
+        return int(res.inserted_primary_key[0])
+
+
+def update_user(user_id: int, data: dict) -> None:
+    ts = now_iso()
+    vals = {
+        "full_name": data["full_name"],
+        "email": data.get("email"),
+        "phone": data.get("phone"),
+        "role": data.get("role", "visitor"),
+        "is_active": data.get("is_active", 1),
+        "updated_at": ts,
+    }
+    # Only touch the agent link when explicitly provided (so profile
+    # updates don't wipe it).
+    if "party_id" in data:
+        vals["party_id"] = data.get("party_id")
+    if data.get("password_hash"):
+        vals["password_hash"] = data["password_hash"]
+    with engine.begin() as conn:
+        conn.execute(users.update().where(users.c.id == user_id).values(**vals))
+
+
+def delete_user(user_id: int) -> None:
+    with engine.begin() as conn:
+        conn.execute(delete(users).where(users.c.id == user_id))
+
+
+def user_count() -> int:
+    with engine.connect() as conn:
+        return conn.execute(select(func.count()).select_from(users)).scalar_one()

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>{{ _('app_title') }}</title>
-    <meta name="theme-color" content="#3a7d44">
+    <meta name="theme-color" content="#0e7c7e">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/favicon-32.png') }}">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
@@ -14,7 +14,7 @@
     <meta name="apple-mobile-web-app-title" content="Atlas RE">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <header class="topbar">
         <div class="brand">
             <span class="logo" aria-hidden="true">
@@ -27,13 +27,43 @@
             <a href="{{ url_for('dashboard') }}" class="brand-link">{{ _('app_title') }}</a>
         </div>
         <nav class="nav">
-            <a href="{{ url_for('dashboard') }}" class="nav-link">{{ _('dashboard') }}</a>
-            <a href="{{ url_for('affairs_list') }}" class="nav-link">{{ _('affairs') }}</a>
-            <a href="{{ url_for('lands_list') }}" class="nav-link">{{ _('list_lands') }}</a>
-            <a href="{{ url_for('customer_list') }}" class="nav-link">{{ _('customers') }}</a>
-            <a href="{{ url_for('seller_list') }}" class="nav-link">{{ _('sellers') }}</a>
-            <a href="{{ url_for('mac_admin') }}" class="nav-link">{{ _('mac_settings') }}</a>
+            {% if is_logged_in() %}
+                {% if has_permission(current_role(), 'view_dashboard') %}
+                <a href="{{ url_for('dashboard') }}" class="nav-link">{{ _('dashboard') }}</a>
+                {% endif %}
+                {% if has_permission(current_role(), 'view_affairs') %}
+                <a href="{{ url_for('affairs_list') }}" class="nav-link">{{ _('affairs') }}</a>
+                {% endif %}
+                {% if has_permission(current_role(), 'view_lands') %}
+                <a href="{{ url_for('lands_list') }}" class="nav-link">{{ _('list_lands') }}</a>
+                {% endif %}
+                {% if has_permission(current_role(), 'view_parties') %}
+                <a href="{{ url_for('customer_list') }}" class="nav-link">{{ _('customers') }}</a>
+                <a href="{{ url_for('seller_list') }}" class="nav-link">{{ _('sellers') }}</a>
+                {% endif %}
+                {% if has_permission(current_role(), 'manage_users') %}
+                <a href="{{ url_for('user_list') }}" class="nav-link">{{ _('users') }}</a>
+                {% endif %}
+                {% if has_permission(current_role(), 'view_agents') %}
+                <a href="{{ url_for('agent_list') }}" class="nav-link">{{ _('agents') }}</a>
+                {% endif %}
+                {% if has_permission(current_role(), 'manage_mac') %}
+                <a href="{{ url_for('mac_admin') }}" class="nav-link">{{ _('mac_settings') }}</a>
+                {% endif %}
+            {% else %}
+                <a href="{{ url_for('auth_login') }}" class="nav-link">{{ _('login') }}</a>
+                <a href="{{ url_for('auth_register') }}" class="nav-link">{{ _('register') }}</a>
+            {% endif %}
         </nav>
+        <div class="user">
+            {% if is_logged_in() %}
+                <a href="{{ url_for('auth_profile') }}" class="nav-link profile-link">
+                    <span class="user-avatar-sm">{{ current_user_name()[0] | upper }}</span>
+                    {{ current_user_name() }}
+                </a>
+                <a href="{{ url_for('auth_logout') }}" class="nav-link logout-link">{{ _('logout') }}</a>
+            {% endif %}
+        </div>
     </header>
 
     <main class="container">
@@ -55,10 +85,9 @@
             <span class="footer-ver">v{{ version }}</span>
         </div>
         <div class="footer-col footer-lang">
-            <span class="lang-label">{{ _('language') }}:</span>
-            <div class="lang-switch">
-                <a href="{{ url_for('set_lang', lang='en') }}" class="{{ 'active' if get_lang()=='en' }}">EN</a>
-                <a href="{{ url_for('set_lang', lang='ar') }}" class="{{ 'active' if get_lang()=='ar' }}">ع</a>
+            <div class="lang-switch" role="group" aria-label="{{ _('language') }}">
+                <a href="{{ url_for('set_lang', lang='en') }}" class="lang-btn {{ 'active' if get_lang()=='en' }}">EN</a>
+                <a href="{{ url_for('set_lang', lang='ar') }}" class="lang-btn {{ 'active' if get_lang()=='ar' }}">عربي</a>
             </div>
         </div>
         <div class="footer-col footer-copy">
