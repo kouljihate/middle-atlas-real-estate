@@ -82,7 +82,7 @@ MAC_PASSWORD = "LooK9LooK"
 SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
 
 # App version (displayed in the footer). Bump on every release.
-APP_VERSION = "1.4.1"
+APP_VERSION = "1.4.2"
 
 # Default currency, shown after every price. Override with CURRENCY env var.
 CURRENCY = os.environ.get("CURRENCY", "MAD")

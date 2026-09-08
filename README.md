@@ -61,7 +61,7 @@ The app creates `data/lands.db` automatically on first run.
 | --- | --- | --- |
 | Database | `DATABASE_URL` | `sqlite:///<ROOT>/data/lands.db` |
 | Secret key | `SECRET_KEY` | `change-me-in-production` |
-| App version | `APP_VERSION` (shown in footer) | `1.4.1` |
+| App version | `APP_VERSION` (shown in footer) | `1.4.2` |
 | Currency | `CURRENCY` | `MAD` |
 | MAC filter | `MAC_FILTER_ENABLED` / `MAC_PASSWORD` | enabled, `LooK9LooK` |
 

@@ -37,14 +37,23 @@ app.secret_key = config.SECRET_KEY
 
 
 def _seed_default_admin():
-    """Create the default admin user if the users table is empty."""
-    if db.user_count() == 0:
+    """Create the default admin user if it does not exist yet.
+
+    Runs at import time, so gunicorn boots it in every worker; guard by
+    username AND tolerate the concurrent-write race across workers.
+    """
+    from sqlalchemy.exc import IntegrityError
+    if db.get_user_by_username(config.DEFAULT_ADMIN_USERNAME) is not None:
+        return
+    try:
         db.create_user({
             "username": config.DEFAULT_ADMIN_USERNAME,
             "password_hash": generate_password_hash(config.DEFAULT_ADMIN_PASSWORD),
             "full_name": config.DEFAULT_ADMIN_NAME,
             "role": "admin",
         })
+    except IntegrityError:
+        pass
 
 
 db.init_db()

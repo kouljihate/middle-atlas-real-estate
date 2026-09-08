@@ -92,6 +92,10 @@ extended by an AI assistant or another developer.
 14. **Port move**: "Default server port moved from 5000 to 5001 (`run.py`
     `PORT` fallback, `start-neon.bat` default, `app/__init__.py` direct-run
     call, README URL). Bump APP_VERSION to 1.4.1, update docs and push."
+15. **Admin-seed race fix**: "Make `_seed_default_admin()` idempotent and
+    race-safe: only insert when the username is missing, and swallow
+    `IntegrityError` so concurrent gunicorn workers cannot crash startup on a
+    UNIQUE constraint. Bump APP_VERSION to 1.4.2, update docs and push."
 
 ## 3. Conventions for AI collaboration
 
