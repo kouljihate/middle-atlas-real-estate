@@ -50,7 +50,7 @@ addable to the home screen on Android/iOS).
 python -m venv venv
 venv\Scripts\activate          # Windows  (Linux/macOS: source venv/bin/activate)
 pip install -r requirements.txt
-python run.py                  # http://127.0.0.1:5000
+python run.py                  # http://127.0.0.1:5001
 ```
 
 The app creates `data/lands.db` automatically on first run.
@@ -61,7 +61,7 @@ The app creates `data/lands.db` automatically on first run.
 | --- | --- | --- |
 | Database | `DATABASE_URL` | `sqlite:///<ROOT>/data/lands.db` |
 | Secret key | `SECRET_KEY` | `change-me-in-production` |
-| App version | `APP_VERSION` (shown in footer) | `1.4.0` |
+| App version | `APP_VERSION` (shown in footer) | `1.4.1` |
 | Currency | `CURRENCY` | `MAD` |
 | MAC filter | `MAC_FILTER_ENABLED` / `MAC_PASSWORD` | enabled, `LooK9LooK` |
 

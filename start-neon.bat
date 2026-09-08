@@ -7,5 +7,5 @@ if "%DATABASE_URL%"=="" (
   set /p DATABASE_URL="Paste Neon URL (postgresql://...?sslmode=require): "
 )
 if "%MAC_FILTER_ENABLED%"=="" set MAC_FILTER_ENABLED=false
-if "%PORT%"=="" set PORT=5000
+if "%PORT%"=="" set PORT=5001
 venv\Scripts\python.exe run.py

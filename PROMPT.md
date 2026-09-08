@@ -89,6 +89,9 @@ extended by an AI assistant or another developer.
 13. **Ops polish**: "Live `/api/db-status` footer pill (ready/idle/down),
     footer column layout, Neon URL auto-normalization + `start-neon.bat`.
     Bump APP_VERSION to 1.4.0, update docs and push."
+14. **Port move**: "Default server port moved from 5000 to 5001 (`run.py`
+    `PORT` fallback, `start-neon.bat` default, `app/__init__.py` direct-run
+    call, README URL). Bump APP_VERSION to 1.4.1, update docs and push."
 
 ## 3. Conventions for AI collaboration
 
