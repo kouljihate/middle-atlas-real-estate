@@ -16,11 +16,12 @@
         </div>
 
         {% if errors %}
-        <div class="flash-stack">
-            {% for e in errors %}
-            <div class="flash flash-error">{{ e }}</div>
-            {% endfor %}
-        </div>
+        <script>
+        window.__toasts = window.__toasts || [];
+        {% for e in errors %}
+        window.__toasts.push({ msg: {{ e|tojson }}, category: "error" });
+        {% endfor %}
+        </script>
         {% endif %}
 
         <form method="post" class="auth-form">

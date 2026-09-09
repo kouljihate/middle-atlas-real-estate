@@ -370,11 +370,19 @@ textarea.input { resize: vertical; }
 
 .empty { color: var(--muted); text-align: center; padding: 2rem; }
 
-/* Flash */
-.flash-stack { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; }
-.flash { padding: .7rem 1rem; border-radius: 10px; font-weight: 600; }
-.flash-success { background: #e6f4ea; color: #1b5e20; border: 1px solid #b7e1c2; }
-.flash-error { background: #fdecea; color: #c62828; border: 1px solid #f5c6c2; }
+/* Toast notifications (top-right, auto-dismiss) */
+.toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 300; display: flex; flex-direction: column; align-items: flex-end; gap: .5rem; max-width: min(90vw, 380px); }
+.toast { display: flex; align-items: center; gap: .6rem; padding: .75rem 1rem; border-radius: 12px; font-weight: 600; font-size: .9rem; box-shadow: 0 8px 24px rgba(0, 0, 0, .16); border: 1px solid transparent; transform: translateX(calc(100% + 2rem)); opacity: 0; transition: transform .3s ease, opacity .3s ease; }
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast.leaving { transform: translateX(calc(100% + 2rem)); opacity: 0; }
+.toast-success { background: #e6f4ea; color: #1b5e20; border-color: #b7e1c2; }
+.toast-error { background: #fdecea; color: #c62828; border-color: #f5c6c2; }
+.toast-close { margin-inline-start: auto; background: none; border: none; padding: 0 .2rem; font-size: 1.15rem; line-height: 1; color: inherit; opacity: .65; cursor: pointer; }
+.toast-close:hover { opacity: 1; }
+@media (max-width: 480px) {
+    .toast-container { right: .5rem; left: .5rem; }
+    .toast { width: 100%; }
+}
 
 /* ---------------------------------------------------------------------------
    Modal
@@ -613,12 +621,6 @@ body.auth-page .lang-switch .lang-btn.active { background: var(--gold); color: #
     box-shadow: 0 0 0 3px rgba(232, 150, 46, .40);
     background: rgba(255, 255, 255, .16);
 }
-.auth-card .flash-error {
-    background: rgba(198, 40, 40, .30);
-    border: 1px solid rgba(255, 150, 150, .45);
-    border-inline-start-width: 4px;
-    color: #ffe0e0;
-}
 .auth-card .btn.primary {
     background: linear-gradient(180deg, #f5b04c, #dd8a1f);
     color: #3d2703;
@@ -654,9 +656,6 @@ body.auth-page .lang-switch .lang-btn.active { background: var(--gold); color: #
 .dash-card:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(10, 79, 82, .14); }
 .dash-card .n { color: var(--primary-dark); }
 body.role-agent .dash-card .n { font-size: 1.1rem; }
-
-/* Flash messages: accent edge */
-.flash { border-inline-start-width: 4px; }
 
 /* Footer language group sits well on the tinted page */
 .lang-switch { box-shadow: 0 1px 2px rgba(10, 79, 82, .08); }

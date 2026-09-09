@@ -103,6 +103,10 @@ extended by an AI assistant or another developer.
     audio/documents` buttons, hidden native file chrome, translated keep
     chip, selected-file list). Bump APP_VERSION to 1.4.3, update docs and
     push."
+17. **Toast notifications**: "Fixed top-right toast notification system: slide-in
+    animation, auto-dismiss after 5 s, success (green) & error (red) variants,
+    close button; both server-side flash messages and client-side errors use the
+    same `#toast-container`. Bump APP_VERSION to 1.4.4, update docs and push."
 
 ## 3. Conventions for AI collaboration
 

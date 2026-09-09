@@ -63,17 +63,15 @@
         </div>
     </header>
 
-    <main class="container">
+    <div id="toast-container" class="toast-container">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-stack">
-                {% for category, msg in messages %}
-                    <div class="flash flash-{{ category }}">{{ msg }}</div>
-                {% endfor %}
-                </div>
-            {% endif %}
+            {% for category, msg in messages %}
+                <div class="toast toast-{{ category }}" role="status">{{ msg }}</div>
+            {% endfor %}
         {% endwith %}
+    </div>
 
+    <main class="container">
         {% block content %}{% endblock %}
     </main>
 

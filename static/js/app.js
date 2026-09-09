@@ -285,3 +285,52 @@
         });
     });
 })();
+
+// ---------------------------------------------------------------------------
+// Toast notifications: fixed top-right, color-coded, auto-dismiss after 5s.
+// Server-rendered flash messages live in #toast-container; form validation
+// errors can be queued via window.__toasts before DOMContentLoaded.
+// ---------------------------------------------------------------------------
+(function () {
+    var HIDE_MS = 5000;
+    var LEAVE_MS = 350;
+
+    function dismiss(el) {
+        if (el.classList.contains('leaving')) return;
+        el.classList.add('leaving');
+        setTimeout(function () { el.remove(); }, LEAVE_MS);
+    }
+
+    function show(el) {
+        void el.offsetWidth;
+        el.classList.add('show');
+        setTimeout(function () { dismiss(el); }, HIDE_MS);
+    }
+
+    function createToast(msg, category) {
+        var container = document.getElementById('toast-container');
+        if (!container) return;
+        var el = document.createElement('div');
+        el.className = 'toast toast-' + (category || 'success');
+        el.setAttribute('role', 'status');
+        var text = document.createElement('span');
+        text.textContent = msg;
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'toast-close';
+        close.setAttribute('aria-label', 'Close');
+        close.textContent = '×';
+        close.addEventListener('click', function () { dismiss(el); });
+        el.appendChild(text);
+        el.appendChild(close);
+        container.appendChild(el);
+        show(el);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        (window.__toasts || []).forEach(function (t) {
+            createToast(t.msg, t.category || 'success');
+        });
+        document.querySelectorAll('#toast-container .toast').forEach(show);
+    });
+})();
