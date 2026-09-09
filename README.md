@@ -31,6 +31,9 @@ addable to the home screen on Android/iOS).
 - **PWA** — manifest, service worker (offline cache), installable, themed icons.
 - **Majorelle theme** — deep-teal + saffron Moroccan styling, frosted-glass centered
   login, row-based responsive forms, VIP Rawy Thin for all Arabic text.
+- **Unified forms** — lands, buyers/sellers, users and affairs share the same
+  `form-centered` card layout with responsive row grids; the land media upload
+  buttons (photos, videos, audio, documents) are fully localized in Arabic.
 - **Smart owner linking** — typing an owner name on a land auto-links (or creates)
   the seller; phone is optional on parties.
 - **Land–affair status sync** — a land is Open while it has no affair; creating or
@@ -61,7 +64,7 @@ The app creates `data/lands.db` automatically on first run.
 | --- | --- | --- |
 | Database | `DATABASE_URL` | `sqlite:///<ROOT>/data/lands.db` |
 | Secret key | `SECRET_KEY` | `change-me-in-production` |
-| App version | `APP_VERSION` (shown in footer) | `1.4.2` |
+| App version | `APP_VERSION` (shown in footer) | `1.4.3` |
 | Currency | `CURRENCY` | `MAD` |
 | MAC filter | `MAC_FILTER_ENABLED` / `MAC_PASSWORD` | enabled, `LooK9LooK` |
 

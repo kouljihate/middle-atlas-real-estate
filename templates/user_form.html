@@ -1,79 +1,76 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="page-header">
+<section class="page-head">
     <h1>{{ _('edit_user') if user else _('new_user') }}</h1>
-    <a href="{{ url_for('user_list') }}" class="btn ghost">&larr; {{ _('back') }}</a>
-</div>
+    <a href="{{ url_for('user_list') }}" class="btn ghost">{{ _('back') }}</a>
+</section>
 
-{% if errors %}
-<div class="flash-stack">
-    {% for e in errors %}
-    <div class="flash flash-error">{{ e }}</div>
-    {% endfor %}
-</div>
-{% endif %}
-
-<form method="post" class="form-card">
-    <div class="form-group">
-        <label for="username">{{ _('username') }}</label>
-        <input type="text" id="username" name="username" required minlength="3"
-               value="{{ data.get('username', '') }}" {{ 'readonly' if user else '' }}>
-    </div>
-
-    {% if not user %}
-    <div class="form-group">
-        <label for="password">{{ _('password') }}</label>
-        <input type="password" id="password" name="password" required minlength="6">
-    </div>
-    {% else %}
-    <div class="form-group">
-        <label for="password">{{ _('new_password') }} ({{ _('optional') }})</label>
-        <input type="password" id="password" name="password" minlength="6">
-    </div>
+{% set errors_map = {} %}
+{% for e in errors %}
+    {% set parts = e.split(': ', 1) %}
+    {% if parts|length == 2 %}
+        {% set _ = errors_map.update({parts[0]: parts[1]}) %}
     {% endif %}
+{% endfor %}
 
-    <div class="form-group">
-        <label for="full_name">{{ _('full_name') }}</label>
-        <input type="text" id="full_name" name="full_name" required
-               value="{{ data.get('full_name', '') }}">
+{% macro field(name, label, value, type='text', step=None, readonly=False) %}
+<div class="form-group">
+    <label for="{{ name }}">{{ label }}</label>
+    <input id="{{ name }}" name="{{ name }}" type="{{ type }}"
+           value="{{ value or '' }}" {{ 'step='~step if step }}
+           class="input" {% if readonly %}readonly{% endif %}
+           {% if name in errors_map %}aria-invalid="true"{% endif %}>
+    {% if name in errors_map %}<small class="err">{{ errors_map[name] }}</small>{% endif %}
+</div>
+{% endmacro %}
+
+<form method="post" class="land-form form-centered" novalidate>
+    <div class="form-row row-4">
+        {{ field('username', _('username'), data.get('username', ''), readonly=user) }}
+        {% if user %}
+            {{ field('password', _('new_password') + ' (' + _('optional') + ')', '', 'password') }}
+        {% else %}
+            {{ field('password', _('password'), '', 'password') }}
+        {% endif %}
+        {{ field('full_name', _('full_name'), data.get('full_name', '')) }}
+        {{ field('email', _('email'), data.get('email', '') or '') }}
     </div>
 
-    <div class="form-group">
-        <label for="email">{{ _('email') }}</label>
-        <input type="email" id="email" name="email"
-               value="{{ data.get('email', '') or '' }}">
+    <div class="form-row row-4">
+        {{ field('phone', _('phone'), data.get('phone', '') or '') }}
+
+        <div class="form-group">
+            <label for="role">{{ _('role') }}</label>
+            <select id="role" name="role" class="input">
+                {% for r in roles %}
+                <option value="{{ r.value }}" {{ 'selected' if data.get('role') == r.value }}>
+                    {{ role_labels.get(r, r.value) }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if user %}
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="is_active" value="1"
+                       {{ 'checked' if data.get('is_active', 1) }}>
+                {{ _('active') }}
+            </label>
+        </div>
+        {% endif %}
     </div>
 
-    <div class="form-group">
-        <label for="phone">{{ _('phone') }}</label>
-        <input type="text" id="phone" name="phone"
-               value="{{ data.get('phone', '') or '' }}">
-    </div>
-
-    <div class="form-group">
-        <label for="role">{{ _('role') }}</label>
-        <select id="role" name="role" required>
-            {% for r in roles %}
-            <option value="{{ r.value }}" {{ 'selected' if data.get('role') == r.value }}>
-                {{ role_labels.get(r, r.value) }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    {% if user %}
-    <div class="form-group">
-        <label class="checkbox-label">
-            <input type="checkbox" name="is_active" value="1"
-                   {{ 'checked' if data.get('is_active', 1) }}>
-            {{ _('active') }}
-        </label>
-    </div>
+    {% if errors %}
+        <ul class="error-list">
+        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
     {% endif %}
 
     <div class="form-actions">
-        <a href="{{ url_for('user_list') }}" class="btn ghost">{{ _('cancel') }}</a>
         <button type="submit" class="btn primary">{{ _('save') }}</button>
+        <a href="{{ url_for('user_list') }}" class="btn ghost">{{ _('cancel') }}</a>
     </div>
 </form>
 {% endblock %}

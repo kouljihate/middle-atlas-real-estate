@@ -96,6 +96,13 @@ extended by an AI assistant or another developer.
     race-safe: only insert when the username is missing, and swallow
     `IntegrityError` so concurrent gunicorn workers cannot crash startup on a
     UNIQUE constraint. Bump APP_VERSION to 1.4.2, update docs and push."
+16. **Unified form & list layout**: "Drop the Agents menu item; restyle Users
+    list and the Add/Edit forms for Land, Buyer/Seller and User to match the
+    Affair form (`form-centered` card, `row-4` grids, same macros); localize
+    every string in the land media upload UI to Arabic (`Add photos/videos/
+    audio/documents` buttons, hidden native file chrome, translated keep
+    chip, selected-file list). Bump APP_VERSION to 1.4.3, update docs and
+    push."
 
 ## 3. Conventions for AI collaboration
 

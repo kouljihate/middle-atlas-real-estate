@@ -25,18 +25,15 @@
 </div>
 {% endmacro %}
 
-<form method="post" enctype="multipart/form-data" class="land-form" novalidate>
-    <div class="form-row row-2">
+<form method="post" enctype="multipart/form-data" class="land-form form-centered" novalidate>
+    <div class="form-row row-4">
         {{ field('title', _('title'), land.title if land else data.get('title')) }}
         {{ field('location', _('location'), land.location if land else data.get('location')) }}
-    </div>
-
-    <div class="form-row row-2">
         {{ field('area', _('area'), land.area if land else data.get('area'), 'number', 'any') }}
         {{ field('price', _('price') + ' (' + currency + ')', land.price if land else data.get('price'), 'number', 'any') }}
     </div>
 
-    <div class="form-row row-2">
+    <div class="form-row row-4">
         {{ field('owner_name', _('owner'), land.owner_name if land else data.get('owner_name'), 'text', None, 'seller_names') }}
         <datalist id="seller_names">
             {% for s in sellers %}
@@ -68,7 +65,13 @@
     <div class="form-group">
         <label for="{{ k.field }}">{{ _(k.label_key) }}</label>
         <input id="{{ k.field }}" name="{{ k.field }}" type="file"
-               accept="{{ k.accept }}" multiple class="input file">
+               accept="{{ k.accept }}" multiple class="file-input"
+               data-kind="{{ k.name }}" aria-label="{{ _(k.label_key) }}">
+        <label for="{{ k.field }}" class="file-btn">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>{{ _('choose_' + k.label_key) }}</span>
+        </label>
+        <span class="file-name" data-name-for="{{ k.field }}"></span>
         {% if land and land[k.column] %}
             <div class="existing">
                 {% for m in land[k.column] %}
@@ -83,7 +86,7 @@
                         {% else %}
                             <span class="doc">📄 {{ m.split('/')[-1] }}</span>
                         {% endif %}
-                        <span>keep</span>
+                        <span>{{ _('keep') }}</span>
                     </label>
                 {% endfor %}
             </div>

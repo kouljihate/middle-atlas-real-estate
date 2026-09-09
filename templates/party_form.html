@@ -24,11 +24,13 @@
 </div>
 {% endmacro %}
 
-<form method="post" class="land-form" novalidate>
-    {{ field('full_name', _('full_name'), party.full_name if party else data.get('full_name')) }}
-    {{ field('email', _('email'), party.email if party else data.get('email')) }}
-    {{ field('phone', _('phone'), party.phone if party else data.get('phone')) }}
-    {{ field('address', _('address'), party.address if party else data.get('address')) }}
+<form method="post" class="land-form form-centered" novalidate>
+    <div class="form-row row-4">
+        {{ field('full_name', _('full_name'), party.full_name if party else data.get('full_name')) }}
+        {{ field('email', _('email'), party.email if party else data.get('email')) }}
+        {{ field('phone', _('phone'), party.phone if party else data.get('phone')) }}
+        {{ field('address', _('address'), party.address if party else data.get('address')) }}
+    </div>
 
     <div class="form-group">
         <label for="notes">{{ _('notes') }}</label>

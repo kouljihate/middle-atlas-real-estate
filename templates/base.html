@@ -44,9 +44,6 @@
                 {% if has_permission(current_role(), 'manage_users') %}
                 <a href="{{ url_for('user_list') }}" class="nav-link">{{ _('users') }}</a>
                 {% endif %}
-                {% if has_permission(current_role(), 'view_agents') %}
-                <a href="{{ url_for('agent_list') }}" class="nav-link">{{ _('agents') }}</a>
-                {% endif %}
                 {% if has_permission(current_role(), 'manage_mac') %}
                 <a href="{{ url_for('mac_admin') }}" class="nav-link">{{ _('mac_settings') }}</a>
                 {% endif %}

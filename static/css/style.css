@@ -354,7 +354,11 @@ input[readonly].input, textarea[readonly].input { background: #f1f4ef; color: va
 .note-stamp { white-space: nowrap; font-weight: 700; font-size: .78rem; color: var(--primary-dark); }
 .note-text { flex: 1; min-width: 0; }
 textarea.note-text { resize: vertical; }
-.input.file { padding: .4rem; }
+.file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.file-btn { display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border: 1px dashed var(--primary); border-radius: 10px; color: var(--primary); background: #f2f8f6; cursor: pointer; font-weight: 600; }
+.file-btn:hover { background: #e4efec; }
+.file-btn .ic { width: 16px; height: 16px; }
+.file-name { display: block; margin-top: .35rem; font-size: .78rem; color: var(--muted); overflow-wrap: anywhere; }
 textarea.input { resize: vertical; }
 .form-actions { display: flex; gap: .6rem; margin-top: 1rem; }
 .error-list { color: var(--danger); margin: .5rem 0; padding-inline-start: 1.2rem; }

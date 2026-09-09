@@ -272,3 +272,16 @@
         }
     });
 })();
+
+// ---------------------------------------------------------------------------
+// Show selected file names under the localized "Add …" buttons on the land form.
+// ---------------------------------------------------------------------------
+(function () {
+    document.querySelectorAll('input[type="file"].file-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+            var names = Array.prototype.slice.call(input.files).map(function (f) { return f.name; });
+            var label = document.querySelector('[data-name-for="' + input.id + '"]');
+            if (label) label.textContent = names.join(', ');
+        });
+    });
+})();
