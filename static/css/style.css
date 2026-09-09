@@ -607,7 +607,7 @@ body.auth-page .lang-switch .lang-btn.active { background: var(--gold); color: #
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .32);
     margin-bottom: .8rem;
 }
-.auth-head h1 { margin: 0; font-size: 1.35rem; }
+.auth-head h1 { margin: 0; font-size: 1.35rem; color: #fff; font-weight: 700; }
 .auth-head h2 { margin: .15rem 0 0; font-size: 1rem; font-weight: 400; opacity: .85; }
 .auth-card .form-group label { color: rgba(255, 255, 255, .92); }
 .auth-card .input {

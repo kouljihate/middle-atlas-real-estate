@@ -107,6 +107,9 @@ extended by an AI assistant or another developer.
     animation, auto-dismiss after 5 s, success (green) & error (red) variants,
     close button; both server-side flash messages and client-side errors use the
     same `#toast-container`. Bump APP_VERSION to 1.4.4, update docs and push."
+18. **Auth H1 contrast**: "Make the login page H1 bold white (`.auth-head h1`:
+    `color: #fff; font-weight: 700`) for better contrast against the themed
+    auth card. Bump APP_VERSION to 1.4.5, update docs and push."
 
 ## 3. Conventions for AI collaboration
 
