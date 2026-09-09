@@ -110,6 +110,13 @@ extended by an AI assistant or another developer.
 18. **Auth H1 contrast**: "Make the login page H1 bold white (`.auth-head h1`:
     `color: #fff; font-weight: 700`) for better contrast against the themed
     auth card. Bump APP_VERSION to 1.4.5, update docs and push."
+19. **Responsive layout**: "Optimize the layout for mobile: column-stacked
+    two-row topbar with a scrollable nav pill row (≤900px), hide the username
+    text on phones (≤640px), widen `.container` to 93%→95%→100% by breakpoint,
+    stack the footer into a single centered column, stretch page-head/search/
+    form/detail buttons full-width for tap targets, tighten KPI cards
+    (1 column under 380px), let note rows wrap, add safe-area insets for notched
+    PWA phones. Bump APP_VERSION to 1.4.6, update docs and push."
 
 ## 3. Conventions for AI collaboration
 

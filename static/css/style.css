@@ -669,3 +669,113 @@ body.role-agent .dash-card .n { font-size: 1.1rem; }
 }
 .status-badge.active { background: #e6f4ea; color: #1b5e20; }
 .status-badge.inactive { background: #fdecea; color: #c62828; }
+
+/* ---------------------------------------------------------------------------
+   Responsive layout (mobile-first polish)
+   --------------------------------------------------------------------------- */
+/* Tablets: condensed topbar (2 rows), full-width-ish container, stacked footer */
+@media (max-width: 1024px) {
+    .container { width: 93%; }
+    body.auth-page .container { max-width: 93%; }
+}
+
+@media (max-width: 900px) {
+    .container { width: 95%; }
+    body.auth-page .container { max-width: 95%; }
+
+    /* Topbar becomes two rows: brand + user on top, scrollable nav below */
+    .topbar {
+        grid-template-columns: auto 1fr auto;
+        grid-template-areas: "brand user" "nav nav";
+        padding: .55rem .8rem;
+        row-gap: .45rem;
+        padding-top: calc(.55rem + env(safe-area-inset-top));
+    }
+    .brand { grid-area: brand; }
+    .nav {
+        grid-area: nav;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: .15rem;
+        scrollbar-width: none;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav .nav-link { flex: none; }
+    .user { grid-area: user; }
+
+    .footer {
+        grid-template-columns: 1fr;
+        gap: .6rem;
+        padding: 1rem .9rem;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    }
+    .footer-col, .footer-copy { justify-content: center; }
+    .footer-ver-col { justify-content: center; }
+    .footer-copy { justify-content: center; }
+
+    .detail-grid .field { padding-inline: .1rem; }
+}
+
+@media (max-width: 640px) {
+    /* Main: wider, edge-to-edge with padding */
+    .container { width: 100%; padding: 0 .75rem; }
+    body.auth-page .container { max-width: 100%; }
+
+    /* Headers: stack, buttons stretch for tap targets */
+    .page-head { flex-direction: column; align-items: stretch; gap: .7rem; }
+    .page-head-row { width: 100%; }
+    .page-head-row .btn,
+    .page-head .btn { width: 100%; }
+
+    /* Search fills the row */
+    .search { width: 100%; }
+    .search input { flex: 1; min-width: 0; }
+
+    /* Hide the username text; keep avatar + logout */
+    .user .profile-link .profile-name { display: none; }
+    .user { gap: .35rem; }
+    .user .nav-link { padding: .35rem .55rem; }
+
+    /* Cards & panels: more internal air on small screens */
+    .card, .land-form, .mac-panel, .detail { padding: 1.05rem; }
+    .modal-card { padding: 1.5rem 1.2rem; }
+
+    /* Form actions full-width */
+    .form-actions { flex-direction: column; }
+    .form-actions .btn { width: 100%; }
+
+    /* Detail actions full-width */
+    .detail-actions { flex-direction: column; }
+    .detail-actions .btn { width: 100%; }
+
+    /* Notes: allow wrapping so stamps don't overflow */
+    .note-row { flex-wrap: wrap; }
+    .note-stamp { width: 100%; }
+
+    /* KPI cards: tidy two-column grid on phones */
+    .dash-cards { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+
+    /* Table-as-cards: evenly spaced actions */
+    .actions-cell { justify-content: space-around; }
+
+    /* Media thumbs a touch smaller */
+    .thumb { width: 48px; height: 48px; }
+
+    /* Pagination info wraps cleanly */
+    .pagination { gap: .3rem; }
+    .page-info { width: 100%; text-align: center; margin: .3rem 0 0; }
+
+    /* Auth card: trim padding on phones */
+    body.auth-page .auth-card { padding: 1.6rem 1.2rem; }
+
+    /* Dashboard heatmap scrolls horizontally (already allowed) with room */
+    .heatmap { gap: 2px; }
+}
+
+/* Very small phones: single-column KPI cards */
+@media (max-width: 380px) {
+    .dash-cards { grid-template-columns: 1fr; }
+    .brand-link { font-size: 1rem; }
+}

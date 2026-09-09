@@ -43,6 +43,9 @@ addable to the home screen on Android/iOS).
 - **Live DB status** — footer pill (green/orange/red) polling `/api/db-status`.
 - **Toast notifications** — fixed top-right, slide-in/out animation, auto-dismiss
   after 5 s, success (green) & error (red) variants, close button.
+- **Responsive layout** — mobile-first polish: two-row topbar with a scrollable
+  nav row, full-width container on phones, stacked footer, full-width action
+  buttons and search, single-column KPI cards under 380 px, safe-area insets.
 - **Neon-ready** — raw provider URLs auto-converted to psycopg v3 scheme;
   `start-neon.bat` launches the app against Neon from Command Prompt.
 - **MAC allow-list gate** (optional) — restrict access to approved device MAC addresses.
@@ -66,7 +69,7 @@ The app creates `data/lands.db` automatically on first run.
 | --- | --- | --- |
 | Database | `DATABASE_URL` | `sqlite:///<ROOT>/data/lands.db` |
 | Secret key | `SECRET_KEY` | `change-me-in-production` |
-| App version | `APP_VERSION` (shown in footer) | `1.4.5` |
+| App version | `APP_VERSION` (shown in footer) | `1.4.6` |
 | Currency | `CURRENCY` | `MAD` |
 | MAC filter | `MAC_FILTER_ENABLED` / `MAC_PASSWORD` | enabled, `LooK9LooK` |
 
